@@ -50,8 +50,10 @@ module.exports = (env, argv) => {
             {
               loader: 'sass-loader',
               options: {
+                api: 'modern',
                 sassOptions: {
                   indentedSyntax: true, // Включаем indented syntax для .sass
+                  silenceDeprecations: ['legacy-js-api'],
                 },
                 sourceMap: isDevelopment,
               },
@@ -75,8 +77,10 @@ module.exports = (env, argv) => {
             {
               loader: 'sass-loader',
               options: {
+                api: 'modern',
                 sassOptions: {
                   indentedSyntax: true, // Включаем indented syntax для .sass
+                  silenceDeprecations: ['legacy-js-api'],
                 },
                 sourceMap: isDevelopment,
               },
