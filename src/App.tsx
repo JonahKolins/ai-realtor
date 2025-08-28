@@ -9,22 +9,22 @@ const CreatePage = React.lazy(() => import('./pages/CreatePage/CreatePage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage/NotFoundPage'));
 
 const App: React.FC = () => {
-  return (
-    <Router>
-      <div className="app">
-        <Navbar />
-        <main>
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/create" element={<CreatePage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-        </main>
-      </div>
-    </Router>
-  );
+    return (
+        <Router>
+            <div className="app">
+                <Navbar />
+                <main>
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <Routes>
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/create" element={<CreatePage />} />
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    </Suspense>
+                </main>
+            </div>
+        </Router>
+    );
 };
 
 export default App;
