@@ -1,0 +1,65 @@
+// CSS модули для страницы 404
+.container
+  min-height: calc(100vh - 60px)
+  display: flex
+  justify-content: center
+  align-items: center
+  padding: 20px
+
+.content
+  text-align: center
+  max-width: 500px
+
+.errorCode
+  font-size: 120px
+  font-weight: bold
+  color: #e74c3c
+  margin: 0
+  line-height: 1
+
+.title
+  font-size: 32px
+  color: #2c3e50
+  margin: 20px 0 16px 0
+
+.description
+  font-size: 18px
+  color: #7f8c8d
+  line-height: 1.6
+  margin-bottom: 40px
+
+.actions
+  display: flex
+  gap: 16px
+  justify-content: center
+  flex-wrap: wrap
+
+.homeButton, .backButton
+  padding: 12px 24px
+  border-radius: 8px
+  font-size: 16px
+  font-weight: 600
+  text-decoration: none
+  cursor: pointer
+  transition: all 0.3s ease
+  border: none
+  font-family: inherit
+
+.homeButton
+  background-color: #3498db
+  color: white
+  
+  &:hover
+    background-color: #2980b9
+    transform: translateY(-2px)
+    text-decoration: none
+
+.backButton
+  background-color: transparent
+  color: #3498db
+  border: 2px solid #3498db
+  
+  &:hover
+    background-color: #3498db
+    color: white
+    transform: translateY(-2px)
