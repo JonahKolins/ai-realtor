@@ -1,5 +1,5 @@
 declare module '*.module.sass' {
-  const classes: { [key: string]: string };
+  const classes: { readonly [key: string]: string };
   export default classes;
 }
 
