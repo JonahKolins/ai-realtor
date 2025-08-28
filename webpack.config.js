@@ -54,7 +54,9 @@ module.exports = (env, argv) => {
                 sassOptions: {
                   indentedSyntax: true, // Включаем indented syntax для .sass
                   silenceDeprecations: ['legacy-js-api'],
+                  includePaths: [path.resolve(__dirname, 'src')],
                 },
+                webpackImporter: true,
                 sourceMap: isDevelopment,
               },
             },
@@ -81,7 +83,9 @@ module.exports = (env, argv) => {
                 sassOptions: {
                   indentedSyntax: true, // Включаем indented syntax для .sass
                   silenceDeprecations: ['legacy-js-api'],
+                  includePaths: [path.resolve(__dirname, 'src')],
                 },
+                webpackImporter: true,
                 sourceMap: isDevelopment,
               },
             },

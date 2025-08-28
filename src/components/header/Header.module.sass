@@ -1,0 +1,146 @@
+@use '../../styles/variables.module.sass' as *
+
+.header
+	position: relative
+	z-index: 9999
+	height: var(--sizes-navHeight)
+
+	.header-container
+		width: 100%
+		background: var(--baseBg)
+		//border-bottom: 2px solid rgba(241, 241, 241, 0.5)
+		display: flex
+		flex-direction: column
+		top: 0
+		position: fixed
+		transition: all 0.2s ease 0s
+		transform: translateY(0%)
+
+		&._hidden
+			transform: translateY(-100%)
+
+		.header-body
+			width: 100%
+			max-width: var(--sizes-pageWidth)
+			padding-left: 0
+			padding-right: 0
+			margin: 0 auto
+			position: relative
+			z-index: 99999
+
+			.content
+				margin: 0 auto
+				display: flex
+				align-items: center
+				justify-content: space-between
+				height: 48px
+				padding: 16px 16px
+
+				@include respond-to('sm')
+					padding: 16px 32px
+
+				.logo
+					display: flex
+					align-items: center
+					justify-content: center
+
+					.company-icon
+						color: var(--baseText)
+
+				.auth-container
+					display: flex
+					align-items: center
+					gap: 12px
+
+					.sign-in-button
+						flex: 1 !important
+						background-color: var(--baseText) !important
+						color: var(--baseBg)
+						//&:hover
+						//	background-color: var(--baseText-gray) !important
+
+					.reg-button
+						flex: 1 !important
+						border: 1px solid var(--baseText)
+
+						//&:hover
+						//	border: 1px solid var(--baseText-gray)
+
+					.avatar
+						height: 34px
+						width: 34px
+						border: 3px solid rgb(172, 156, 255)
+						border-radius: 50%
+						display: flex
+						align-items: center
+						justify-content: center
+						cursor: pointer
+
+						&:hover
+							border-color: #7B61FF
+
+			.navigation
+				background: transparent
+				position: absolute
+				top: 0
+				left: 64px
+				height: 48px
+				padding: 0 32px
+				display: none
+				align-items: center
+				gap: 24px
+
+				@include respond-to('sm')
+					display: flex
+
+				.item
+					font-size: 14px
+					color: var(--baseText-darkGray)
+					display: flex
+					flex-direction: column
+					text-decoration: none
+					height: 100%
+					align-items: center
+					justify-content: center
+
+					&:hover
+						color: var(--baseText)
+
+
+.drop-link
+	// border: 1px solid #f5f5f5
+	// border-radius: 8px
+	box-shadow: none !important
+
+.service-dropdown-item
+	display: flex
+	align-items: center
+	gap: 12px
+	opacity: 0.7
+	padding: 8px 12px 8px 0
+	font-family: "Outfit", sans-serif
+
+	&:hover
+		opacity: 1
+
+	.icon-container
+		display: flex
+		align-items: center
+		justify-content: center
+
+	.content
+		display: flex
+		flex-direction: column
+		align-items: flex-start
+
+		.caption
+			color: var(--baseText)
+			font-size: 14px
+			font-weight: 500
+			line-height: 16px
+
+		.text
+			color: var(--baseText-darkGray)
+			font-size: 14px
+			font-weight: 400
+			line-height: 16px

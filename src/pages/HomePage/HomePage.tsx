@@ -5,29 +5,29 @@ const HomePage: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.hero}>
-        <h1 className={styles.title}>Добро пожаловать в AI Realtor</h1>
+        <h1 className={styles.title}>Welcome to AI Realtor</h1>
         <p className={styles.subtitle}>
-          Современная платформа для работы с недвижимостью
+          Modern platform for working with real estate
         </p>
         <button className={styles.ctaButton}>
-          Начать работу
+          Start working
         </button>
       </header>
       
       <section className={styles.features}>
-        <h2 className={styles.sectionTitle}>Наши возможности</h2>
+        <h2 className={styles.sectionTitle}>Our features</h2>
         <div className={styles.featuresGrid}>
           <div className={styles.feature}>
-            <h3>Умный поиск</h3>
-            <p>ИИ поможет найти идеальную недвижимость</p>
+            <h3>Smart search</h3>
+            <p>AI will help you find the perfect real estate</p>
           </div>
           <div className={styles.feature}>
-            <h3>Аналитика рынка</h3>
-            <p>Актуальные данные о ценах и трендах</p>
+            <h3>Market analytics</h3>
+            <p>Actual data on prices and trends</p>
           </div>
           <div className={styles.feature}>
-            <h3>Персональные рекомендации</h3>
-            <p>Подборка объектов под ваши требования</p>
+            <h3>Personal recommendations</h3>
+            <p>Selection of objects under your requirements</p>
           </div>
         </div>
       </section>
