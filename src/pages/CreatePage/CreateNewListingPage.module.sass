@@ -1,0 +1,212 @@
+.page-container
+	display: flex
+	align-items: stretch
+	min-height: 100vh
+
+	.create-container
+		flex: 1
+		max-width: 600px
+		padding: 20px
+		background-color: #ffffff
+
+		.formWrapper
+			background-color: #fff
+
+			.title
+				font-size: 20px
+				margin-bottom: 16px
+				color: var(--baseText)
+
+			.listing-types-container
+				display: flex
+				align-items: center
+				flex-wrap: wrap
+				gap: 16px
+
+				.listing-type-item
+					display: flex
+					align-items: center
+					gap: 12px
+					opacity: 0.7
+					padding: 8px 12px 8px 12px
+					border: 1px solid #bbc4c4
+					border-radius: 8px
+					cursor: pointer
+					transition: all 0.3s ease
+					min-width: 120px
+					font-size: 16px
+					font-weight: 500
+					line-height: 20px
+					color: var(--baseText)
+
+					&:hover
+						opacity: 1
+						border-color: rgb(36, 36, 36)
+
+					&._active
+						opacity: 1
+						border-color: rgb(36, 36, 36)
+
+			.form
+				display: flex
+				flex-direction: column
+				gap: 24px
+
+			.field
+				display: flex
+				flex-direction: column
+				gap: 8px
+				margin-bottom: 16px
+
+				.label
+					font-weight: 600
+					color: var(--baseText)
+					font-size: 16px
+
+
+	.preview-container
+		flex: 1
+		background-color: rgb(255, 255, 255)
+		padding: 16px
+		border-left: 1px solid #e1e8e8
+		min-width: 300px
+		overflow-y: auto
+
+		.preview-header
+			display: flex
+			align-items: center
+			margin-bottom: 16px
+			gap: 10px
+			
+			.preview-tab
+				display: flex
+				align-items: center
+				justify-content: center
+				padding: 8px 12px 8px 12px
+				border: 1px solid var(--baseText)
+				border-radius: 8px
+				font-size: 14px
+				font-weight: 500
+				line-height: 16px
+				color: var(--baseText)
+				opacity: 0.7
+				cursor: pointer
+				background-color: #ffffff
+				transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease
+
+				&:hover
+					opacity: 1
+
+				&._active
+					opacity: 1
+					background-color: var(--baseText)
+					color: #ffffff
+
+.input, .select, .textarea
+	padding: 12px 16px
+	border: 1px solid #bbc4c4
+	border-radius: 8px
+	font-size: 16px
+	transition: border-color 0.3s ease
+	font-family: inherit
+	
+	&:focus
+		outline: none
+		border-color: var(--baseText)
+		
+	&::placeholder
+		color: #95a5a6
+
+.textarea
+	resize: vertical
+	min-height: 120px
+
+.submitButton
+	background-color: #3498db
+	color: white
+	border: none
+	padding: 16px 32px
+	font-size: 18px
+	font-weight: 600
+	border-radius: 8px
+	cursor: pointer
+	transition: all 0.3s ease
+	margin-top: 16px
+	
+	&:hover
+		background-color: #2980b9
+		transform: translateY(-2px)
+		box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3)
+		
+	&:active
+		transform: translateY(0)
+
+.photos-radio
+	display: flex
+	align-items: center
+	gap: 12px
+	opacity: 0.7
+	padding: 8px 12px 8px 12px
+	border: 1px solid #bbc4c4
+	border-radius: 8px
+	cursor: pointer
+	transition: all 0.3s ease
+	min-width: 120px
+	font-size: 16px
+	font-weight: 500
+	line-height: 20px
+	color: var(--baseText)
+
+	&:hover
+		opacity: 1
+		border-color: rgb(36, 36, 36)
+
+	&._active
+		opacity: 1
+		border-color: rgb(36, 36, 36)
+
+.property-type-caption
+	display: flex
+	align-items: center
+	gap: 12px
+	opacity: 0.7
+	padding: 8px 12px 8px 12px
+	border: 1px solid #bbc4c4
+	border-radius: 8px
+
+	&._active
+		opacity: 1
+		border-color: rgb(36, 36, 36)
+
+
+.service-dropdown-item
+	display: flex
+	align-items: center
+	gap: 12px
+	opacity: 0.7
+	padding: 8px 12px 8px 0
+
+	&:hover
+		opacity: 1
+
+	.icon-container
+		display: flex
+		align-items: center
+		justify-content: center
+
+	.content
+		display: flex
+		flex-direction: column
+		align-items: flex-start
+
+		.caption
+			color: var(--baseText)
+			font-size: 14px
+			font-weight: 500
+			line-height: 16px
+
+		.text
+			color: var(--baseText-darkGray)
+			font-size: 14px
+			font-weight: 400
+			line-height: 16px
