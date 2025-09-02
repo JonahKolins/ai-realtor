@@ -126,10 +126,16 @@ module.exports = (env, argv) => {
       compress: true,
     },
     
-    optimization: {
-      splitChunks: {
-        chunks: 'all',
-      },
+        optimization: {
+        splitChunks: {
+            chunks: 'all',
+        },
+    },
+
+    performance: {
+        hints: isDevelopment ? false : 'warning',
+        maxAssetSize: 1024 * 1024, // 1MB
+        maxEntrypointSize: 1024 * 1024, // 1MB
     },
     
     devtool: isDevelopment ? 'eval-source-map' : 'source-map',

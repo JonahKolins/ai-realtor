@@ -4,7 +4,7 @@ import {Link, useLocation, useNavigate} from "react-router-dom";
 import Button from "../../designSystem/button/Button";
 import { Dropdown, MenuProps } from "antd";
 import { BsBoxes } from "react-icons/bs";
-import { IoBedOutline, IoHomeOutline } from "react-icons/io5";
+import { IoBedOutline, IoHomeOutline, IoLayersOutline } from "react-icons/io5";
 
 interface HeaderProps {}
 
@@ -54,7 +54,7 @@ const Header = memo<HeaderProps>(() => {
 			},
 			{
 				label: serviceDropdownItem(
-					<IoHomeOutline size={22} />,
+					<IoLayersOutline size={22} />,
 					'Listings',
 					'View all listings',
 					() => { navigate('/listings')}
