@@ -113,6 +113,21 @@ module.exports = (env, argv) => {
           filename: '[name].[contenthash].css',
         }),
       ]),
+
+      // Копируем _redirects файл для Railway
+      ...(isDevelopment ? [] : [{
+        apply: (compiler) => {
+          compiler.hooks.afterEmit.tap('CopyRedirects', () => {
+            const fs = require('fs');
+            const path = require('path');
+            const redirectsSource = path.resolve(__dirname, 'public/_redirects');
+            const redirectsTarget = path.resolve(__dirname, 'dist/_redirects');
+            if (fs.existsSync(redirectsSource)) {
+              fs.copyFileSync(redirectsSource, redirectsTarget);
+            }
+          });
+        }
+      }]),
     ],
     
     devServer: {
