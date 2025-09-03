@@ -1,0 +1,10 @@
+[phases.setup]
+nixPkgs = ["nodejs"]
+
+[phases.install]
+cmd = "npm ci"
+
+[phases.build]
+cmd = "npm run build"
+
+# НЕ добавляем секцию [start] для статических сайтов
