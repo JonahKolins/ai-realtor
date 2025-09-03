@@ -1,0 +1,4 @@
+# Упрощенная конфигурация (переименуйте в nixpacks.toml если основная не работает)
+
+[phases.build]
+cmd = "npm ci && npm run build"
