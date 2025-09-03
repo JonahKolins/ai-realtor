@@ -8,3 +8,14 @@ node_modules/
 coverage/
 *.tgz
 *.tar.gz
+src/
+public/
+tsconfig.json
+webpack.config.js
+.editorconfig
+.prettierrc
+README.md
+DEPLOY.md
+TROUBLESHOOTING.md
+README.api.md
+RAILWAY_ENV.md
