@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -106,6 +107,14 @@ module.exports = (env, argv) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: './public/index.html',
+      }),
+
+      // Определяем переменные окружения для браузера
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(isDevelopment ? 'development' : 'production'),
+        'process.env.REACT_APP_API_HOST': JSON.stringify(process.env.REACT_APP_API_HOST || 'https://ai-realtor-backend-production.up.railway.app'),
+        'process.env.REACT_APP_INTERNAL_API_HOST': JSON.stringify(process.env.REACT_APP_INTERNAL_API_HOST || 'http://ai-realtor-backend.railway.internal:8080'),
+        'process.env.REACT_APP_API_PREFIX': JSON.stringify(process.env.REACT_APP_API_PREFIX || '/api/v1'),
       }),
       
       ...(isDevelopment ? [] : [

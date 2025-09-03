@@ -13,10 +13,21 @@
 
 ### Backend API
 
-Проект настроен для работы с бэкендом:
+Проект настроен для работы с бэкендом на Railway:
+
+**Внешний доступ (всегда работает):**
 ```
 https://ai-realtor-backend-production.up.railway.app/api/v1
 ```
+
+**Внутренняя Railway сеть (быстрее, только Railway ↔ Railway):**
+```
+http://ai-realtor-backend.railway.internal:8080/api/v1
+```
+
+**Автоматический выбор:**
+- В локальной разработке → внешний URL
+- При деплое на Railway → внутренний URL (оптимизация скорости)
 
 ## Инструкции по деплою
 
@@ -75,11 +86,30 @@ ai-realtor/
 └── .railwayignore         # Исключения для деплоя
 ```
 
-## Переменные окружения (если нужны)
+## Переменные окружения
 
-В Railway можно настроить переменные окружения:
-- `NODE_ENV=production` (автоматически)
-- Другие переменные при необходимости
+### Автоматически настраиваются в Railway:
+
+```bash
+NODE_ENV=production
+REACT_APP_API_HOST=https://ai-realtor-backend-production.up.railway.app
+REACT_APP_INTERNAL_API_HOST=http://ai-realtor-backend.railway.internal:8080
+REACT_APP_API_PREFIX=/api/v1
+```
+
+### Для локальной разработки (.env):
+
+```bash
+REACT_APP_API_HOST=https://ai-realtor-backend-production.up.railway.app
+REACT_APP_API_PREFIX=/api/v1
+NODE_ENV=development
+```
+
+### Настройка связи между сервисами Railway:
+
+1. **Frontend проект** (этот) → использует внутреннюю Railway сеть
+2. **Backend проект** (`ai-realtor-backend`) → Railway internal URL: `ai-realtor-backend.railway.internal:8080`
+3. **Автоматическое переключение** между внешним/внутренним URL
 
 ## Troubleshooting
 
