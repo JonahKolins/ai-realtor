@@ -4,7 +4,8 @@
         "builder": "NIXPACKS"
     },
     "deploy": {
-        "staticPublishPath": "dist"
+        "staticPublishPath": "dist",
+        "startCommand": "npm start"
     },
     "environments": {
         "production": {
@@ -12,7 +13,8 @@
                 "NODE_ENV": "production",
                 "REACT_APP_API_HOST": "https://ai-realtor-backend-production.up.railway.app",
                 "REACT_APP_INTERNAL_API_HOST": "http://ai-realtor-backend.railway.internal:8080",
-                "REACT_APP_API_PREFIX": "/api/v1"
+                "REACT_APP_API_PREFIX": "/api/v1",
+                "PORT": "3000"
             }
         }
     }

@@ -117,8 +117,7 @@ NODE_ENV=development
 
 Если возникает ошибка с `npm` в Nix:
 1. ✅ Исправлено: убран `npm` из `nixpacks.toml` (npm входит в nodejs)
-2. Если проблема остается - переименуйте `nixpacks.simple.toml` в `nixpacks.toml`
-3. Как последний вариант - удалите `nixpacks.toml` (Railway автоматически определит Node.js проект)
+2. Как последний вариант - удалите `nixpacks.toml` (Railway автоматически определит Node.js проект)
 
 ### Другие проблемы
 
