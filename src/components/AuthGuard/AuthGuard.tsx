@@ -16,8 +16,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
     const isDevelopment = process.env.NODE_ENV === 'development';
     
     // Данные для входа из переменных окружения (Webpack заменит эти значения при сборке)
-    const ADMIN_USERNAME = process.env.REACT_APP_ADMIN_USERNAME || 'admin';
-    const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD || 'password123';
+    const ADMIN_USERNAME = process.env.REACT_APP_ADMIN_USERNAME || 'test';
+    const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD || 'nicecock99';
 
     useEffect(() => {
         // В режиме разработки аутентификация отключена
