@@ -115,6 +115,8 @@ module.exports = (env, argv) => {
         'process.env.REACT_APP_API_HOST': JSON.stringify(process.env.REACT_APP_API_HOST || 'https://ai-realtor-backend-production.up.railway.app'),
         'process.env.REACT_APP_INTERNAL_API_HOST': JSON.stringify(process.env.REACT_APP_INTERNAL_API_HOST || 'http://ai-realtor-backend.railway.internal:8080'),
         'process.env.REACT_APP_API_PREFIX': JSON.stringify(process.env.REACT_APP_API_PREFIX || '/api/v1'),
+        'process.env.REACT_APP_ADMIN_USERNAME': JSON.stringify(process.env.REACT_APP_ADMIN_USERNAME || 'admin'),
+        'process.env.REACT_APP_ADMIN_PASSWORD': JSON.stringify(process.env.REACT_APP_ADMIN_PASSWORD || 'password123'),
       }),
       
       ...(isDevelopment ? [] : [

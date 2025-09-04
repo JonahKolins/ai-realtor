@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LoadingSpinner } from './components/LoadingSpinner/LoadingSpinner';
 import Header from './components/header/Header';
+import AuthGuard from './components/AuthGuard/AuthGuard';
 import './App.modile.sass';
 
 // Ленивая загрузка страниц
@@ -12,19 +13,21 @@ const ListingsPage = React.lazy(() => import('./pages/ListingsPage/ListingsPage'
 
 const App: React.FC = () => {
     return (
-        <Router>
-            <div className="app">
-                <Header />
-                <Suspense fallback={<LoadingSpinner />}>
-                    <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/create" element={<CreateNewListingPage />} />
-                        <Route path="/listings" element={<ListingsPage />} />
-                        <Route path="*" element={<NotFoundPage />} />
-                    </Routes>
-                </Suspense>
-            </div>
-        </Router>
+        <AuthGuard>
+            <Router>
+                <div className="app">
+                    <Header />
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <Routes>
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/create" element={<CreateNewListingPage />} />
+                            <Route path="/listings" element={<ListingsPage />} />
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    </Suspense>
+                </div>
+            </Router>
+        </AuthGuard>
     );
 };
 
