@@ -7,4 +7,5 @@ cmd = "npm ci"
 [phases.build]
 cmd = "npm run build"
 
-# НЕ добавляем секцию [start] для статических сайтов
+[start]
+cmd = "npm start"
