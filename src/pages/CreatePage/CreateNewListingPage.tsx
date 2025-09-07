@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import styles from './CreateNewListingPage.module.sass';
-import { Dropdown, Segmented, MenuProps, Radio, RadioChangeEvent } from 'antd';
+import { Dropdown, Segmented, MenuProps, Radio, RadioChangeEvent, Switch } from 'antd';
 import { IoBedOutline, IoHomeOutline, IoBusinessOutline, IoCashOutline, IoCellularOutline } from "react-icons/io5";
 import classNames from 'classnames';
 import { PhotoUploader, PhotoFile } from '../../components/PhotoUploader';
+import PhotosSection from '@/pagesContent/createNewListing/photosSection/PhotosSection';
 
 enum ListingType {
     SELL = 'sell',
@@ -62,9 +63,8 @@ const CreateNewListingPage: React.FC = () => {
 
     const [listingType, setListingType] = useState<ListingType>(listingTypes[0].value);
     const [propertyType, setPropertyType] = useState<IPropertyData>(propertyTypes[0]);
-    const [photosEnabled, setPhotosEnabled] = useState<boolean>(false);
-    const [photos, setPhotos] = useState<PhotoFile[]>([]);
     const [activeTab, setActiveTab] = useState<PreviewTab>(PreviewTab.PREVIEW);
+    const [isPhotosTabVisible, setIsPhotosTabVisible] = useState<boolean>(false);
 
     useEffect(() => {
         if (listingType === ListingType.RENT_OUT && propertyType.value !== PropertyType.DEFAULT) {
@@ -86,8 +86,12 @@ const CreateNewListingPage: React.FC = () => {
         setListingType(value);
     };
 
-    const handlePhotosChange = (newPhotos: PhotoFile[]) => {
-        setPhotos(newPhotos);
+    const handlePhotosChange = (photos: PhotoFile[]) => {
+        if (photos.length > 0) {
+            setIsPhotosTabVisible(true);
+        } else {
+            setIsPhotosTabVisible(false);
+        }
     };
 
     const serviceDropdownItem = (icon: JSX.Element | null, caption: string, text: string, onClick?: () => void) => {
@@ -129,13 +133,6 @@ const CreateNewListingPage: React.FC = () => {
 
     const handleOpenDropDown = () => {
         console.log('open');
-    };
-
-    const handlePhotosRadioChange = (e: RadioChangeEvent) => {        
-        setPhotosEnabled(e.target.checked);
-        if (e.target.checked) {
-            setActiveTab(PreviewTab.PHOTOS);
-        }
     };
 
     return (
@@ -187,16 +184,10 @@ const CreateNewListingPage: React.FC = () => {
                         </Dropdown>
                     </div>
                     <div className={styles.field}>
-                        <label htmlFor="photos" className={styles.label}>
-                            Photos
-                        </label>
-                        <Radio 
-                            checked={photosEnabled}
-                            onChange={handlePhotosRadioChange}
-                            className={classNames(styles['photos-radio'], photosEnabled && styles['_active'])}
-                        >
-                            Upload photos
-                        </Radio>
+                        <PhotosSection 
+                            label="Photos" 
+                            onPhotosChange={handlePhotosChange}
+                        />
                     </div>
 
                     <div className={styles.field}>
@@ -227,23 +218,18 @@ const CreateNewListingPage: React.FC = () => {
                     >
                         Preview
                     </div>
-                    <div 
-                        className={classNames(
-                            styles['preview-tab'],
-                             activeTab === PreviewTab.PHOTOS && styles['_active']
-                        )}
-                        onClick={() => setActiveTab(PreviewTab.PHOTOS)}
-                    >
-                        Photos
-                    </div>
+                    {isPhotosTabVisible && (
+                        <div 
+                            className={classNames(
+                                styles['preview-tab'],
+                                activeTab === PreviewTab.PHOTOS && styles['_active']
+                            )}
+                            onClick={() => setActiveTab(PreviewTab.PHOTOS)}
+                        >
+                            Photos
+                        </div>
+                    )}
                 </div>
-                {photosEnabled && activeTab == PreviewTab.PHOTOS && (       
-                    <PhotoUploader 
-                        onFilesChange={handlePhotosChange}
-                        maxFiles={10}
-                        maxFileSize={5 * 1024 * 1024} // 5MB
-                    />
-                )}
             </div>
         </div>
     );

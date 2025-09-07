@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { PhotoPreview } from './PhotoPreview';
 import styles from './PhotoUploader.module.sass';
 import { IoCloudUploadOutline } from 'react-icons/io5';
+import classNames from 'classnames';
 
 export interface PhotoFile {
     id: string;
@@ -15,6 +16,8 @@ interface PhotoUploaderProps {
     onFilesChange?: (files: PhotoFile[]) => void;
     maxFiles?: number;
     maxFileSize?: number; // в байтах
+    uploadZoneClassName?: string;
+    hidePreview?: boolean;
 }
 
 const ALLOWED_IMAGE_TYPES = [
@@ -30,7 +33,9 @@ const ALLOWED_IMAGE_TYPES = [
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({ 
     onFilesChange,
     maxFiles = 10,
-    maxFileSize = 5 * 1024 * 1024 // 5MB по умолчанию
+    maxFileSize = 5 * 1024 * 1024, // 5MB по умолчанию
+    uploadZoneClassName,
+    hidePreview
 }) => {
     const [photos, setPhotos] = useState<PhotoFile[]>([]);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -177,7 +182,11 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
         <div className={styles.container}>
             {/* Зона загрузки */}
             <div 
-                className={`${styles.uploadZone} ${isDragOver ? styles._dragOver : ''}`}
+                className={classNames(
+                    styles['uploadZone'],
+                    isDragOver && styles['_dragOver'],
+                    uploadZoneClassName
+                )}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -191,7 +200,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
                     id="photo-upload"
                 />
                 <label htmlFor="photo-upload" className={styles.uploadLabel}>
-                    <IoCloudUploadOutline size={48} className={styles.uploadIcon} />
+                    <IoCloudUploadOutline size={36} className={styles.uploadIcon} />
                     <div className={styles.uploadText}>
                         <div>Drag and drop photos here</div>
                         <div>or <span className={styles.clickText}>click to select</span></div>
@@ -218,6 +227,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
                             key={photo.id}
                             photo={photo}
                             onRemove={handleRemovePhoto}
+                            hidePreview={hidePreview}
                         />
                     ))}
                 </div>

@@ -1,0 +1,55 @@
+.photos-section
+	display: flex
+	flex-direction: column
+	gap: 8px
+
+	.photos-section-label
+		font-size: 16px
+		font-weight: 600
+		line-height: 20px
+		color: var(--baseText)
+
+	.enable-photos-container
+		display: flex
+		align-items: center
+		gap: 8px
+		padding: 8px 12px 8px 12px
+		border-radius: 8px
+		border: 1px solid #bbc4c4
+		cursor: pointer
+		transition: all 0.3s ease
+
+		&._active
+			border-color: rgb(36, 36, 36)
+			.enable-photos-switch
+				background-color: var(--baseText)
+		
+		.enable-photos-switch
+			width: 24px
+
+		.enable-photos-text
+			font-size: 16px
+			font-weight: 500
+			line-height: 20px
+			color: var(--baseText)
+
+	.photos-container
+		
+		.photos-upload-zone
+			padding: 16px
+
+	.link-to-photos
+		padding: 8px 12px
+		background-color: #3f4042
+		border-radius: 8px
+		font-size: 14px
+		color: #ffffff
+		display: flex
+		justify-content: space-between
+		align-items: center
+		cursor: pointer
+		transition: background-color 0.3s ease
+
+		&:hover
+			background-color: #333333
+	

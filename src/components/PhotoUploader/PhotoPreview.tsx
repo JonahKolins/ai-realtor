@@ -11,9 +11,10 @@ import {
 interface PhotoPreviewProps {
     photo: PhotoFile;
     onRemove: (photoId: string) => void;
+    hidePreview?: boolean;
 }
 
-export const PhotoPreview: React.FC<PhotoPreviewProps> = ({ photo, onRemove }) => {
+export const PhotoPreview: React.FC<PhotoPreviewProps> = ({ photo, onRemove, hidePreview }) => {
     const getFileExtension = (filename: string): string => {
         return filename.split('.').pop()?.toUpperCase() || '';
     };
@@ -32,9 +33,9 @@ export const PhotoPreview: React.FC<PhotoPreviewProps> = ({ photo, onRemove }) =
             case 'uploading':
                 return <div className={styles.loadingSpinner}></div>;
             case 'success':
-                return <IoCheckmarkCircleOutline className={styles.successIcon} size={20} />;
+                return <IoCheckmarkCircleOutline className={styles.successIcon} size={16} />;
             case 'error':
-                return <IoAlertCircleOutline className={styles.errorIcon} size={20} />;
+                return <IoAlertCircleOutline className={styles.errorIcon} size={16} />;
             default:
                 return null;
         }
@@ -49,20 +50,22 @@ export const PhotoPreview: React.FC<PhotoPreviewProps> = ({ photo, onRemove }) =
                 type="button"
                 aria-label="Удалить фотографию"
             >
-                <IoCloseOutline size={16} />
+                <IoCloseOutline size={14} />
             </button>
 
             {/* Превью изображения */}
-            <div className={styles.imageContainer}>
-                <img 
-                    src={photo.preview} 
-                    alt={photo.file.name}
-                    className={styles.image}
-                />
-                <div className={styles.overlay}>
-                    <IoImageOutline size={24} className={styles.imageIcon} />
+            {!hidePreview && (
+                <div className={styles.imageContainer}>
+                    <img 
+                        src={photo.preview} 
+                        alt={photo.file.name}
+                        className={styles.image}
+                    />
+                    <div className={styles.overlay}>
+                        <IoImageOutline size={24} className={styles.imageIcon} />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Информация о файле */}
             <div className={styles.fileInfo}>
