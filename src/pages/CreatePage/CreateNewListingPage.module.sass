@@ -1,16 +1,110 @@
 .page-container
 	display: flex
 	align-items: stretch
-	min-height: 100vh
+	flex-grow: 1
 
 	.create-container
+		display: flex
 		flex: 1
-		max-width: 600px
-		padding: 20px
+		max-width: 1280px
+		margin: 0 auto
 		background-color: #ffffff
 
-		.formWrapper
+		&__navigation
+			display: flex
+			flex-direction: column
+			flex-grow: 1
+			max-width: 300px
+			background-color: #f7f7f7
+			padding: 20px
+
+			.title
+				font-size: 20px
+				margin-bottom: 16px
+				color: var(--baseText)
+
+			.description
+				font-size: 14px
+				line-height: 20px
+				color: var(--baseText-darkGray)
+				margin-bottom: 16px
+
+			.navigation-tabs
+				display: flex
+				flex-direction: column
+				gap: 6px
+				margin-top: 16px
+
+				.navigation-item
+					display: flex
+					align-items: center
+					justify-content: space-between
+					gap: 12px
+					font-size: 16px
+					font-weight: 500
+					line-height: 20px
+					cursor: pointer
+					border-radius: 8px
+					padding: 8px 12px 8px 12px
+					background: transparent
+					transition: background 0.2s ease
+
+					.navigation-item-content
+						display: flex
+						align-items: center
+						gap: 12px
+
+						.navigation-item-icon
+							display: flex
+							align-items: center
+							justify-content: center
+							width: 20px
+							height: 20px
+							color: #808080
+
+						.navigation-item-title
+							font-size: 16px
+							font-weight: 500
+							line-height: 20px
+							color: var(--baseText-darkGray)
+
+					.navigation-item-completed
+						display: flex
+						align-items: center
+						justify-content: center
+						width: 20px
+						color: #1bac2c
+
+					.navigation-item-not-started
+						display: flex
+						align-items: center
+						justify-content: center
+						width: 20px
+						color: #808080
+
+					&:hover:not(&._disabled)
+						.navigation-item-content
+							.navigation-item-icon
+								color: var(--baseText)
+							.navigation-item-title	
+								color: var(--baseText)
+
+					&._active:not(&._disabled)
+						background: #eaeaea
+						.navigation-item-content
+							.navigation-item-icon
+								color: var(--baseText)
+							.navigation-item-title	
+								color: var(--baseText)
+
+					&._disabled
+						opacity: 0.5
+						cursor: default
+
+		&__form-wrapper
+			flex-grow: 1
 			background-color: #fff
+			padding: 20px 24px
 
 			.title
 				font-size: 20px

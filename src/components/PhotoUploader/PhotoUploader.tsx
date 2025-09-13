@@ -60,7 +60,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
             setTimeout(() => {
                 const random = Math.random();
                 if (random > 0.8) {
-                    reject(new Error('Ошибка загрузки на сервер'));
+                    reject(new Error('Error uploading to server'));
                 } else {
                     resolve();
                 }
@@ -74,7 +74,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
         // Проверка лимита файлов
         if (photos.length + fileList.length > maxFiles) {
-            newErrors.push(`Можно загрузить не более ${maxFiles} фотографий.`);
+            newErrors.push(`You can upload up to ${maxFiles} photos.`);
             setErrors(newErrors);
             return;
         }

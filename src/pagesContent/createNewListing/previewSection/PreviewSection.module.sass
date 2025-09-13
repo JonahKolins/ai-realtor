@@ -1,0 +1,98 @@
+.container
+	display: flex
+	flex-direction: column
+	gap: 16px
+
+.title
+	font-size: 20px
+	line-height: 24px
+	margin-bottom: 8px
+	color: var(--baseText)
+
+.description
+	font-size: 14px
+	line-height: 20px
+	font-weight: 500
+	color: var(--baseText-darkGray)
+	margin-bottom: 16px
+
+.preview
+	display: flex
+	flex-direction: column
+	gap: 12px
+	padding: 16px
+	border: 1px solid #e1e8e8
+	border-radius: 8px
+	background-color: #f9f9f9
+
+.field
+	display: flex
+	justify-content: space-between
+	align-items: center
+	padding: 8px 0
+
+	.label
+		font-weight: 600
+		color: var(--baseText)
+		font-size: 14px
+		min-width: 120px
+
+	.value
+		color: var(--baseText-darkGray)
+		font-size: 14px
+		text-align: right
+
+.actions
+	display: flex
+	gap: 12px
+	margin-top: 16px
+
+	.saveButton
+		width: 120px
+		height: 40px
+		background: transparent
+		color: var(--baseText)
+		border: 1px solid var(--baseText)
+		border-radius: 8px
+		transition: all 0.3s ease
+
+		&:hover
+			background: var(--baseText)
+			color: #ffffff
+
+		&:disabled
+			opacity: 0.5
+			cursor: not-allowed
+
+	.publishButton
+		width: 140px
+		height: 40px
+		background: #000000
+		color: #ffffff
+		border: none
+		border-radius: 8px
+		transition: all 0.3s ease
+
+		&:hover
+			opacity: 0.8
+
+		&:disabled
+			opacity: 0.5
+			cursor: not-allowed
+
+.error
+	padding: 8px 12px
+	background-color: #ffebee
+	border: 1px solid #f44336
+	border-radius: 4px
+	color: #d32f2f
+	font-size: 14px
+
+.warning
+	padding: 8px 12px
+	background-color: #fff3e0
+	border: 1px solid #ff9800
+	border-radius: 4px
+	color: #e65100
+	font-size: 14px
+	text-align: center

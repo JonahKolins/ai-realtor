@@ -1,0 +1,27 @@
+.field
+	display: flex
+	flex-direction: column
+	gap: 8px
+	margin-bottom: 16px
+
+	.label
+		font-weight: 600
+		color: var(--baseText)
+		font-size: 16px
+
+.textarea
+	padding: 12px 16px
+	border: 1px solid #bbc4c4
+	border-radius: 8px
+	font-size: 16px
+	transition: border-color 0.3s ease
+	font-family: inherit
+	resize: vertical
+	min-height: 120px
+	
+	&:focus
+		outline: none
+		border-color: var(--baseText)
+		
+	&::placeholder
+		color: #95a5a6

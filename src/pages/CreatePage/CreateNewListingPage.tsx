@@ -1,57 +1,54 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './CreateNewListingPage.module.sass';
-import { Dropdown, Segmented, MenuProps, Radio, RadioChangeEvent, Switch } from 'antd';
-import { IoBedOutline, IoHomeOutline, IoBusinessOutline, IoCashOutline, IoCellularOutline } from "react-icons/io5";
+import { IoCashOutline, IoImagesOutline, IoDocumentOutline, IoReaderOutline, IoCheckmarkCircleOutline, IoLockClosedOutline } from "react-icons/io5";
 import classNames from 'classnames';
-import { PhotoUploader, PhotoFile } from '../../components/PhotoUploader';
 import PhotosSection from '@/pagesContent/createNewListing/photosSection/PhotosSection';
+import ListingTypeSection from '@/pagesContent/createNewListing/listingTypeSection/ListingTypeSection';
+import DetailsSection from '@/pagesContent/createNewListing/detailsSection/DetailsSection';
+import PreviewSection from '@/pagesContent/createNewListing/previewSection/PreviewSection';
+import { PropertyType } from '@/classes/listings/Listing.types';
+import { useListingDraft } from '@/core/hooks/useListingDraft';
 
-enum ListingType {
-    SELL = 'sell',
-    RENT_OUT = 'rentOut',
-}
-
-interface IListingTypeData {
-    label: string;
-    value: ListingType;
-    icon: JSX.Element;
-}
-
-const listingTypes: IListingTypeData[] = [
-    {label: 'Sell', value: ListingType.SELL, icon: <IoCashOutline size={24} />},
-    {label: 'Rent out', value: ListingType.RENT_OUT, icon: <IoCellularOutline size={24} />},
-]
-
-enum PropertyType {
-    DEFAULT = 'default',
-    HOUSE = 'house',
-    APARTMENT = 'apartment',
-    ROOM = 'room',
-}
-
-interface IPropertyData {
-    caption: string;
+interface INavigationItem {
+    title: string;
+    alias: NavigationItemAlias;
     icon: JSX.Element | null;
-    value: PropertyType;
+    initial: boolean;
 }
 
-const propertyTypes: IPropertyData[] = [
-    {caption: 'Choose property type', icon: null, value: PropertyType.DEFAULT},
-    {caption: 'House', icon: <IoHomeOutline size={22} />, value: PropertyType.HOUSE},
-    {caption: 'Apartment', icon: <IoBusinessOutline size={22} />, value: PropertyType.APARTMENT},
-]
-
-const propertyTypesForRentOut: IPropertyData[] = [
-    {caption: 'Choose property type', icon: null, value: PropertyType.DEFAULT},
-    {caption: 'House', icon: <IoHomeOutline size={22} />, value: PropertyType.HOUSE},
-    {caption: 'Apartment', icon: <IoBusinessOutline size={22} />, value: PropertyType.APARTMENT},
-    {caption: 'Room', icon: <IoBedOutline size={22} />, value: PropertyType.ROOM},
-]
-
-enum PreviewTab {
-    PREVIEW = 'preview',
+enum NavigationItemAlias {
+    LISTING = 'listing',
     PHOTOS = 'photos',
+    DETAILS = 'details',
+    PREVIEW = 'preview',
 }
+
+const navigationItems: INavigationItem[] = [
+    {
+        title: 'Listing',
+        alias: NavigationItemAlias.LISTING,
+        icon: <IoCashOutline size={22} />,
+        initial: true,
+    },
+    {
+        title: 'Photos',
+        alias: NavigationItemAlias.PHOTOS,
+        icon: <IoImagesOutline size={22} />,
+        initial: false,
+    },
+    {
+        title: 'Details',
+        alias: NavigationItemAlias.DETAILS,
+        icon: <IoDocumentOutline size={22} />,
+        initial: false,
+    },
+    {
+        title: 'Preview',
+        alias: NavigationItemAlias.PREVIEW,
+        icon: <IoReaderOutline size={22} />,
+        initial: false,
+    }
+]
 
 const CreateNewListingPage: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -61,18 +58,28 @@ const CreateNewListingPage: React.FC = () => {
         type: PropertyType.APARTMENT
     });
 
-    const [listingType, setListingType] = useState<ListingType>(listingTypes[0].value);
-    const [propertyType, setPropertyType] = useState<IPropertyData>(propertyTypes[0]);
-    const [activeTab, setActiveTab] = useState<PreviewTab>(PreviewTab.PREVIEW);
-    const [isPhotosTabVisible, setIsPhotosTabVisible] = useState<boolean>(false);
+    const [selectedTab, setSelectedTab] = useState<NavigationItemAlias>(navigationItems[0].alias);
+    const [createListingStarted, setCreateListingStarted] = useState<boolean>(false);
+
+    const {draft, data, updateListingType, updatePropertyType, saveDraft, forceClearDraft} = useListingDraft({
+        autoSave: false,
+        createOnMount: true,
+        initialData: {
+            type: 'sale',
+            propertyType: PropertyType.APARTMENT,
+        },
+    });
 
     useEffect(() => {
-        if (listingType === ListingType.RENT_OUT && propertyType.value !== PropertyType.DEFAULT) {
-            setPropertyType(propertyTypesForRentOut[0]);
-        } else if (listingType === ListingType.SELL && propertyType.value !== PropertyType.DEFAULT) {
-            setPropertyType(propertyTypes[0]);
+        return () => {
+            // очищаем черновик при размонтировании компонента
+            // используем forceClearDraft для гарантированной очистки
+            forceClearDraft();
         }
-    }, [listingType])
+    }, [forceClearDraft])
+
+    console.log('draft', draft);
+    console.log('data', data);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -82,153 +89,105 @@ const CreateNewListingPage: React.FC = () => {
         }));
     };
 
-    const handleListingTypeChange = (value: ListingType) => {
-        setListingType(value);
-    };
-
-    const handlePhotosChange = (photos: PhotoFile[]) => {
-        if (photos.length > 0) {
-            setIsPhotosTabVisible(true);
-        } else {
-            setIsPhotosTabVisible(false);
-        }
-    };
-
-    const serviceDropdownItem = (icon: JSX.Element | null, caption: string, text: string, onClick?: () => void) => {
-		return (
-			<div onClick={onClick} className={styles['service-dropdown-item']}>
-				<div className={styles['icon-container']}>{icon}</div>
-				<div className={styles['content']}>
-					<div className={styles['caption']}>{caption}</div>
-					{!!text && <div className={styles['text']}>{text}</div>}
-				</div>
-			</div>
-		)
-	}
-
-    // получение типов недвижимости в зависимости от типа объявления
-    const propertyTypesByListingType = useMemo(() => {
-        return listingType === ListingType.RENT_OUT ? propertyTypesForRentOut : propertyTypes;
-    }, [listingType])
-
     // обработка выбора типа недвижимости
     const handlePropertyTypeChange = (value: string) => {
-        const propertyType = propertyTypesByListingType.find(type => type.value === value);
-        if (propertyType) {
-            setPropertyType(propertyType);
-        }
+        // Эта логика теперь переносится в PropertyTypeSection
+        console.log('Property type changed:', value);
     }
-
-    // @ts-ignore
-	const propertyTypesMenu = useMemo<MenuProps["items"]>(() => {
-        const items = propertyTypesByListingType.map((item, index) => {
-            if (item.value === PropertyType.DEFAULT) return null;
-            return {
-                label: serviceDropdownItem(item.icon, item.caption, '', () => handlePropertyTypeChange(item.value)),
-                key: index,
-            }
-        })
-		return items;
-	}, [propertyTypesByListingType, handlePropertyTypeChange])
 
     const handleOpenDropDown = () => {
         console.log('open');
     };
 
+    //
+    const handleNextStep = (nextTab: NavigationItemAlias) => {
+        setSelectedTab(nextTab);
+    }
+
+    //
+    const handleStartCreateListing = () => {
+        setCreateListingStarted(true);
+        handleNextStep(NavigationItemAlias.PHOTOS);
+    }
+
+    const renderNavigationTabs = () => {
+        return navigationItems.map((item: INavigationItem) => (
+            <div 
+                key={item.alias} 
+                className={classNames(
+                    styles['navigation-item'],
+                    selectedTab === item.alias && styles['_active'],
+                    !item.initial && !createListingStarted && styles['_disabled']
+                )}
+                onClick={() => {
+                    if (item.initial || createListingStarted) {
+                        setSelectedTab(item.alias);
+                    }
+                }}
+            >
+                <div className={styles['navigation-item-content']}>
+                    <div className={styles['navigation-item-icon']}>{item.icon}</div>
+                    <div className={styles['navigation-item-title']}>{item.title}</div>
+                </div>
+                {item.initial && createListingStarted && (
+                    <div className={styles['navigation-item-completed']}>
+                        <IoCheckmarkCircleOutline size={20} />
+                    </div>
+                )}
+                {!item.initial && !createListingStarted && (
+                    <div className={styles['navigation-item-not-started']}>
+                        <IoLockClosedOutline size={18} />
+                    </div>
+                )}
+            </div>
+        ))
+    }
+
+    const renderContentByTabId = () => {
+        switch (selectedTab) {
+            case NavigationItemAlias.LISTING:
+                return (
+                    <ListingTypeSection 
+                        data={data}
+                        updateListingType={updateListingType} 
+                        updatePropertyType={updatePropertyType} 
+                        onNextStep={handleStartCreateListing} 
+                        saveDraft={saveDraft}
+                    />
+                )
+            case NavigationItemAlias.PHOTOS:
+                return (
+                    <PhotosSection 
+                        onPhotosChange={() => {}}
+                    />
+                )
+            case NavigationItemAlias.DETAILS:
+                return (
+                    <DetailsSection 
+                        value={formData.description}
+                        onChange={handleChange}
+                    />
+                )
+            case NavigationItemAlias.PREVIEW:
+                return (
+                    <PreviewSection />
+                )
+            default: return null;
+        }
+    }
+
     return (
         <div className={styles['page-container']}>
             <div className={styles['create-container']}>
-                <div className={styles.formWrapper}>
-                    <h1 className={styles.title}>Create a new listing</h1>
-                    <div className={styles.field}>
-                        <label htmlFor="listing-type" className={styles.label}>
-                            Listing type
-                        </label>
-                        <div className={styles['listing-types-container']}>
-                            {listingTypes.map((item: IListingTypeData) => (
-                                <div 
-                                    key={item.value}
-                                    className={classNames(styles['listing-type-item'], listingType === item.value && styles['_active'])}
-                                    onClick={() => handleListingTypeChange(item.value)}
-                                >
-                                    <div className={styles['listing-type-item-icon']}>
-                                        <div>{item.icon}</div>
-                                        <div>{item.label}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className={styles.field}>
-                        <label htmlFor="type" className={styles.label}>
-                            Property type
-                        </label>
-                        <Dropdown
-                            onOpenChange={handleOpenDropDown}
-                            menu={{
-                                items: propertyTypesMenu,
-                            }}
-                            trigger={['hover']}
-                            autoAdjustOverflow
-                            placement='bottomLeft'
-                            rootClassName={styles['drop-link']} //not work
-                        >
-                            <div 
-                                className={classNames(
-                                    styles['property-type-caption'],
-                                    propertyType.value !== 'default' && styles['_active']
-                                )}
-                            >
-                                {propertyType.caption}
-                            </div>
-                        </Dropdown>
-                    </div>
-                    <div className={styles.field}>
-                        <PhotosSection 
-                            label="Photos" 
-                            onPhotosChange={handlePhotosChange}
-                        />
-                    </div>
-
-                    <div className={styles.field}>
-                        <label htmlFor="description" className={styles.label}>
-                            Details
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            className={styles.textarea}
-                            placeholder="Tell us about the property..."
-                            rows={5}
-                            required
-                        />
+                <div className={styles['create-container__navigation']}>
+                    <h1 className={styles['title']}>Create a new listing</h1>
+                    <div className={styles['description']}>Simple poll for creating a new listing with photos and details</div>
+                    <div className={styles['navigation-tabs']}>
+                        {renderNavigationTabs()}
                     </div>
                 </div>
-            </div>
-            <div className={styles['preview-container']}>
-                <div className={styles['preview-header']}>
-                    <div 
-                        className={classNames(
-                            styles['preview-tab'],
-                            activeTab === PreviewTab.PREVIEW && styles['_active']
-                        )}
-                        onClick={() => setActiveTab(PreviewTab.PREVIEW)}
-                    >
-                        Preview
-                    </div>
-                    {isPhotosTabVisible && (
-                        <div 
-                            className={classNames(
-                                styles['preview-tab'],
-                                activeTab === PreviewTab.PHOTOS && styles['_active']
-                            )}
-                            onClick={() => setActiveTab(PreviewTab.PHOTOS)}
-                        >
-                            Photos
-                        </div>
-                    )}
+                <div className={styles['create-container__form-wrapper']}>
+                    {renderContentByTabId()}
                 </div>
             </div>
         </div>

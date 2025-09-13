@@ -61,6 +61,15 @@ const Header = memo<HeaderProps>(() => {
 				),
 				key: '2',
 			},
+            {
+				label: serviceDropdownItem(
+					<IoLayersOutline size={22} />,
+					'Photos',
+					'Edit photos of listings',
+					() => { navigate('/edit-photos')}
+				),
+				key: '3',
+			},
 		]
 	}, [])
 
@@ -97,12 +106,12 @@ const Header = memo<HeaderProps>(() => {
 							menu={{
 								items: services,
 							}}
-							trigger={['hover']}
+							trigger={['click']}
 							autoAdjustOverflow
 							placement='bottomLeft'
 							rootClassName={styles['drop-link']} //not work
 						>
-							<Link to="/services" className={styles['item']}>Services</Link>
+							<div className={styles['item']}>Services</div>
 						</Dropdown>
 						<Link to="/about" className={styles['item']}>About</Link>
 						<Link to="/contacts" className={styles['item']}>Contacts</Link>

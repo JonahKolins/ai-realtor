@@ -10,6 +10,7 @@ const HomePage = React.lazy(() => import('./pages/HomePage/HomePage'));
 const CreateNewListingPage = React.lazy(() => import('./pages/CreatePage/CreateNewListingPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage/NotFoundPage'));
 const ListingsPage = React.lazy(() => import('./pages/ListingsPage/ListingsPage'));
+const EditPhotosPage = React.lazy(() => import('./pages/EditPhotosPage/EditPhotosPage'));
 
 const App: React.FC = () => {
     return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
                             <Route path="/" element={<HomePage />} />
                             <Route path="/create" element={<CreateNewListingPage />} />
                             <Route path="/listings" element={<ListingsPage />} />
+                            <Route path="/edit-photos" element={<EditPhotosPage />} />
                             <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                     </Suspense>
