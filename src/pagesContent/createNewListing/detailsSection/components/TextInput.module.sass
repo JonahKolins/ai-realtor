@@ -1,0 +1,26 @@
+.container
+	display: flex
+	flex-direction: column
+	gap: 8px
+	margin-bottom: 16px
+
+.label
+	font-weight: 600
+	color: var(--baseText)
+	font-size: 14px
+
+.input
+	padding: 8px 12px
+	border: 1px solid #bbc4c4
+	border-radius: 6px
+	font-size: 14px
+	transition: border-color 0.3s ease
+	max-width: 200px
+
+	&:focus
+		outline: none
+		border-color: var(--baseText)
+
+	&::placeholder
+		color: #95a5a6
+

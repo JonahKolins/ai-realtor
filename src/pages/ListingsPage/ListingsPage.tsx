@@ -54,8 +54,8 @@ const ListingsPage = React.memo(() => {
                                 <div>Updated: {datetimeUtils.formatTime(listing.updatedAt, 'DD.MM.YYYY HH:mm')}</div>
                                 <div>Status: {listing.status}</div>
                                 <div>Listing type: {listing.type}</div>
-                                <div>City: {listing.userFields.city}</div>
-                                <div>Floor: {listing.userFields.floor}</div>
+                                <div>City: {listing.userFields?.city}</div>
+                                <div>Floor: {listing.userFields?.floor}</div>
                             </div>
                         </div>
                     ))}

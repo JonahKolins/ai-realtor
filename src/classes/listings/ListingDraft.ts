@@ -19,6 +19,7 @@ export interface IListingDraftData {
         area?: number;
         balcony?: boolean;
         parking?: boolean;
+        extraInfo?: string;
         [key: string]: any;
     };
     // Медиа файлы

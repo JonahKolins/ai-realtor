@@ -51,18 +51,11 @@ const navigationItems: INavigationItem[] = [
 ]
 
 const CreateNewListingPage: React.FC = () => {
-    const [formData, setFormData] = useState({
-        title: '',
-        description: '',
-        price: '',
-        type: PropertyType.APARTMENT
-    });
-
     const [selectedTab, setSelectedTab] = useState<NavigationItemAlias>(navigationItems[0].alias);
     const [createListingStarted, setCreateListingStarted] = useState<boolean>(false);
 
-    const {draft, data, updateListingType, updatePropertyType, saveDraft, forceClearDraft} = useListingDraft({
-        autoSave: false,
+    const {draft, data, updateListingType, updatePropertyType, updateUserFields, saveDraft, forceClearDraft} = useListingDraft({
+        autoSave: true,
         createOnMount: true,
         initialData: {
             type: 'sale',
@@ -78,25 +71,18 @@ const CreateNewListingPage: React.FC = () => {
         }
     }, [forceClearDraft])
 
-    console.log('draft', draft);
-    console.log('data', data);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    // обработка выбора типа недвижимости
-    const handlePropertyTypeChange = (value: string) => {
-        // Эта логика теперь переносится в PropertyTypeSection
-        console.log('Property type changed:', value);
-    }
-
-    const handleOpenDropDown = () => {
-        console.log('open');
+    // обработка изменений деталей недвижимости
+    const handleDetailsChange = (details: any, changedFields: Set<string>) => {
+        console.log('Details changed:', details, Array.from(changedFields));
+        
+        // Сохраняем только измененные поля в userFields
+        const changedData: any = {};
+        changedFields.forEach(field => {
+            changedData[field] = details[field];
+        });
+        
+        // Обновляем userFields в черновике
+        updateUserFields(changedData);
     };
 
     //
@@ -104,10 +90,15 @@ const CreateNewListingPage: React.FC = () => {
         setSelectedTab(nextTab);
     }
 
-    //
+    // обработка нажатия на кнопку "Далее" в секции "Listing"
     const handleStartCreateListing = () => {
         setCreateListingStarted(true);
         handleNextStep(NavigationItemAlias.PHOTOS);
+    }
+
+    // обработка нажатия на кнопку "Далее" в секции "Details"
+    const handleDetailsSectionNextStep = () => {
+        handleNextStep(NavigationItemAlias.PREVIEW);
     }
 
     const renderNavigationTabs = () => {
@@ -164,8 +155,10 @@ const CreateNewListingPage: React.FC = () => {
             case NavigationItemAlias.DETAILS:
                 return (
                     <DetailsSection 
-                        value={formData.description}
-                        onChange={handleChange}
+                        data={data}
+                        onDetailsChange={handleDetailsChange}
+                        onNextStep={handleDetailsSectionNextStep}
+                        saveDraft={saveDraft}
                     />
                 )
             case NavigationItemAlias.PREVIEW:

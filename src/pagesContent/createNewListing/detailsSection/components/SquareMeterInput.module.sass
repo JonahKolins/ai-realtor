@@ -1,0 +1,47 @@
+.container
+	display: flex
+	flex-direction: column
+	gap: 8px
+
+.label
+	font-weight: 600
+	color: var(--baseText)
+	font-size: 14px
+
+.inputWrapper
+	position: relative
+	max-width: 200px
+
+.input
+	width: 100%
+	padding: 8px 35px 8px 12px
+	border: 1px solid #bbc4c4
+	border-radius: 6px
+	font-size: 14px
+	transition: border-color 0.3s ease
+
+	&:focus
+		outline: none
+		border-color: var(--baseText)
+
+	&::placeholder
+		color: #95a5a6
+
+	// Скрываем нативные стрелочки в WebKit браузерах (Chrome, Safari)
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button
+		-webkit-appearance: none
+		margin: 0
+
+	// Скрываем нативные стрелочки в Firefox
+	-moz-appearance: textfield
+
+.unit
+	position: absolute
+	right: 12px
+	top: 50%
+	transform: translateY(-50%)
+	color: var(--baseText-darkGray)
+	font-size: 14px
+	font-weight: 500
+	pointer-events: none

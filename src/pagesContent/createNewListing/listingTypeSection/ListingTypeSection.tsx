@@ -100,7 +100,7 @@ const ListingTypeSection = React.memo<ListingTypeSectionProps>(({ data, onNextSt
     }, [selectedPropertyData, selectedListing]);
 
     return (
-        <>
+        <div className={styles['listing-type-section']}>
             <h1 className={styles['title']}>Listing</h1>
             <div className={styles['description']}>Choose the type of listing and the type of object you want to sell or rent out.</div>
             <div className={styles['field']}>
@@ -146,7 +146,7 @@ const ListingTypeSection = React.memo<ListingTypeSectionProps>(({ data, onNextSt
                     </Button>
                 </div>
             </div>
-        </>
+        </div>
     );
 });
 
