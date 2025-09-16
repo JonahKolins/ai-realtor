@@ -59,7 +59,7 @@ const CreateNewListingPage: React.FC = () => {
         createOnMount: true,
         initialData: {
             type: 'sale',
-            propertyType: PropertyType.APARTMENT,
+            propertyType: PropertyType.HOUSE,
         },
     });
 
@@ -108,28 +108,24 @@ const CreateNewListingPage: React.FC = () => {
                 className={classNames(
                     styles['navigation-item'],
                     selectedTab === item.alias && styles['_active'],
-                    !item.initial && !createListingStarted && styles['_disabled']
+                    // !item.initial && !createListingStarted && styles['_disabled']
                 )}
-                onClick={() => {
-                    if (item.initial || createListingStarted) {
-                        setSelectedTab(item.alias);
-                    }
-                }}
+                onClick={() => setSelectedTab(item.alias)}
             >
                 <div className={styles['navigation-item-content']}>
                     <div className={styles['navigation-item-icon']}>{item.icon}</div>
                     <div className={styles['navigation-item-title']}>{item.title}</div>
                 </div>
-                {item.initial && createListingStarted && (
+                {/* {item.initial && createListingStarted && (
                     <div className={styles['navigation-item-completed']}>
                         <IoCheckmarkCircleOutline size={20} />
                     </div>
-                )}
-                {!item.initial && !createListingStarted && (
+                )} */}
+                {/* {!item.initial && !createListingStarted && (
                     <div className={styles['navigation-item-not-started']}>
                         <IoLockClosedOutline size={18} />
                     </div>
-                )}
+                )} */}
             </div>
         ))
     }
