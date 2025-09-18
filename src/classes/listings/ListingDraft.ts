@@ -4,6 +4,8 @@ import { ListingType, ListingStatus, IListing, requestUpdateListing, requestCrea
 import { PropertyType } from "@/classes/listings/Listing.types";
 
 export interface IListingDraftData {
+    // ID для AI генерации
+    id?: string;
     // Основные данные
     type?: ListingType;
     propertyType?: PropertyType;
@@ -68,7 +70,10 @@ export class ListingDraft {
     }
 
     public get data(): IListingDraftData {
-        return { ...this._data };
+        return { 
+            ...this._data,
+            id: this._id || undefined 
+        };
     }
 
     public get saving(): boolean {

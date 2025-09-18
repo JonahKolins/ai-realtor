@@ -159,7 +159,7 @@ const CreateNewListingPage: React.FC = () => {
                 )
             case NavigationItemAlias.PREVIEW:
                 return (
-                    <PreviewSection />
+                    <PreviewSection data={data} />
                 )
             default: return null;
         }
