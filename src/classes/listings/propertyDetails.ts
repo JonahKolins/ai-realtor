@@ -1,81 +1,119 @@
 import { PropertyType } from "./Listing.types";
+import { IListingUserFields } from "./ListingUserFields";
 
-export interface IPropertyDetails {
-    // address
-    street?: string;
-    flatNumber?: string;
-    postalCode?: string; // CAP
-    community?: string; // Communa
-    province?: string;
-    // property details
-    squareMeters?: number;
-    levels?: number;
-    rooms?: number;
-    floor?: number;
-    //
-    cellar?: boolean;
-    // balcony
-    balcony?: boolean;
-    balconyNumber?: number;
-    terrace?: boolean;
-    // parking
-    parking?: boolean;
-    parkingPlaces?: number;
-    // garden
-    garden?: boolean;
-    gardenSquareMeters?: number;
-    // elevator
-    elevator?: boolean;
-    // 
-    heating?: boolean;
-    water?: boolean;
-    electricity?: boolean;
-    gas?: boolean;
-    sewerage?: boolean;
-    // extraInfo
-    extraInfo?: string;
+/**
+ * Интерфейс для деталей недвижимости
+ * Расширяет IListingUserFields для обратной совместимости
+ */
+export interface IPropertyDetails extends IListingUserFields {
+    // Наследует все поля из IListingUserFields
+    // Дополнительные поля для UI-специфичных нужд могут быть добавлены здесь
 }
 
 export type IPropertyInitialDetails = Record<PropertyType, IPropertyDetails>;
 
 export const propertyInitialDetails: IPropertyInitialDetails = {
     [PropertyType.HOUSE]: {
+        // Локация
         street: '',
         flatNumber: '',
         postalCode: '',
         community: '',
         province: '',
+        city: '',
+        neighborhood: '',
+        address: '',
+        // Площадь и планировка
         squareMeters: undefined,
         levels: 1,
         rooms: 1,
+        bedrooms: undefined,
+        bathrooms: undefined,
+        // Этаж
+        floor: undefined,
+        totalFloors: undefined,
+        elevator: false,
+        // Удобства
         cellar: false,
         balcony: false,
+        balconyNumber: undefined,
+        balconySize: undefined,
         terrace: false,
+        terraceSize: undefined,
         parking: false,
+        parkingPlaces: undefined,
         garden: false,
         gardenSquareMeters: undefined,
-        elevator: false,
-        heating: false,
+        // Коммуникации
+        heating: '',
+        heatingType: '',
         water: false,
         electricity: false,
         gas: false,
-        sewerage: false
+        sewerage: false,
+        // Энергоэффективность
+        energyClass: '',
+        // Расстояния
+        walkingDistanceMetro: undefined,
+        metroStation: '',
+        walkingDistancePark: undefined,
+        parkName: '',
+        walkingDistanceShops: undefined,
+        walkingDistanceSchools: undefined,
+        // Финансы
+        condoFees: undefined,
+        // Состояние
+        condition: '',
+        yearBuilt: undefined,
+        yearRenovated: undefined,
     },
     [PropertyType.APARTMENT]: {
+        // Локация
         street: '',
         flatNumber: '',
         postalCode: '',
         community: '',
         province: '',
+        city: '',
+        neighborhood: '',
+        address: '',
+        // Площадь и планировка
         squareMeters: undefined,
         floor: undefined,
+        totalFloors: undefined,
         levels: 1,
         rooms: 1,
+        bedrooms: undefined,
+        bathrooms: undefined,
+        // Этаж
+        elevator: false,
+        // Удобства
         cellar: false,
         balcony: false,
+        balconyNumber: undefined,
+        balconySize: undefined,
         terrace: false,
+        terraceSize: undefined,
         parking: false,
-        elevator: false
+        parkingPlaces: undefined,
+        // Коммуникации
+        heating: '',
+        heatingType: '',
+        // Энергоэффективность
+        energyClass: '',
+        // Расстояния
+        walkingDistanceMetro: undefined,
+        metroStation: '',
+        walkingDistancePark: undefined,
+        parkName: '',
+        walkingDistanceShops: undefined,
+        walkingDistanceSchools: undefined,
+        // Финансы
+        condoFees: undefined,
+        // Состояние
+        condition: '',
+        yearBuilt: undefined,
+        yearRenovated: undefined,
     },
     [PropertyType.CELLAR]: {
         street: '',
@@ -83,8 +121,11 @@ export const propertyInitialDetails: IPropertyInitialDetails = {
         postalCode: '',
         community: '',
         province: '',
+        city: '',
+        neighborhood: '',
         squareMeters: undefined,
-        floor: undefined
+        floor: undefined,
+        totalFloors: undefined,
     },
     [PropertyType.GARAGE]: {
         street: '',
@@ -92,8 +133,11 @@ export const propertyInitialDetails: IPropertyInitialDetails = {
         postalCode: '',
         community: '',
         province: '',
+        city: '',
+        neighborhood: '',
         squareMeters: undefined,
-        floor: undefined
+        floor: undefined,
+        totalFloors: undefined,
     },
     [PropertyType.PARKING]: {
         street: '',
@@ -101,8 +145,11 @@ export const propertyInitialDetails: IPropertyInitialDetails = {
         postalCode: '',
         community: '',
         province: '',
+        city: '',
+        neighborhood: '',
         squareMeters: undefined,
         floor: undefined,
+        totalFloors: undefined,
         parkingPlaces: undefined
     },
     [PropertyType.COMMERCIAL]: {
@@ -111,12 +158,18 @@ export const propertyInitialDetails: IPropertyInitialDetails = {
         postalCode: '',
         community: '',
         province: '',
+        city: '',
+        neighborhood: '',
         squareMeters: undefined,
         floor: undefined,
+        totalFloors: undefined,
         levels: undefined,
         rooms: undefined,
         parking: false,
-        parkingPlaces: undefined
+        parkingPlaces: undefined,
+        heating: '',
+        energyClass: '',
+        yearBuilt: undefined,
     },
     [PropertyType.ROOM]: {
         street: '',
@@ -124,7 +177,11 @@ export const propertyInitialDetails: IPropertyInitialDetails = {
         postalCode: '',
         community: '',
         province: '',
-        squareMeters: undefined
+        city: '',
+        neighborhood: '',
+        squareMeters: undefined,
+        floor: undefined,
+        totalFloors: undefined,
     },
     [PropertyType.DEFAULT]: {
         street: '',
@@ -132,8 +189,11 @@ export const propertyInitialDetails: IPropertyInitialDetails = {
         postalCode: '',
         community: '',
         province: '',
+        city: '',
+        neighborhood: '',
         squareMeters: undefined,
         floor: undefined,
+        totalFloors: undefined,
         levels: undefined,
         rooms: undefined
     }

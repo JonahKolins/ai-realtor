@@ -3,6 +3,7 @@ import styles from './DetailsSection.module.sass';
 import { propertyInitialDetails, IPropertyDetails } from '@/classes/listings/propertyDetails';
 import { PropertyType } from '@/classes/listings/Listing.types';
 import { IListingDraftData } from '@/classes/listings/ListingDraft';
+import { HEATING_TYPES, ENERGY_CLASSES, CONDITION_TYPES } from '@/classes/listings/ListingUserFields';
 import NumberInput from './components/NumberInput';
 import ToggleInput from './components/ToggleInput';
 import TextInput from './components/TextInput';
@@ -10,33 +11,62 @@ import SquareMeterInput from './components/SquareMeterInput';
 import { IoBookmarkOutline, IoBookmark } from "react-icons/io5";
 import classNames from 'classnames';
 import Button from '@/designSystem/button/Button';
-import { Input } from 'antd';
+import { Input, Select } from 'antd';
 
 // Маппинг полей к их отображаемым названиям
-const fieldLabels: Record<keyof IPropertyDetails, string> = {
+const fieldLabels: Partial<Record<keyof IPropertyDetails, string>> = {
+    // Локация
     street: 'Street, Building',
     flatNumber: 'Flat Number',
     postalCode: 'CAP',
     community: 'Communa',
     province: 'Province',
+    city: 'City',
+    neighborhood: 'Neighborhood',
+    address: 'Full Address',
+    // Площадь и планировка
     squareMeters: 'Square Meters',
     levels: 'Levels',
-    rooms: 'Rooms',
+    rooms: 'Total Rooms',
+    bedrooms: 'Bedrooms',
+    bathrooms: 'Bathrooms',
     floor: 'Floor',
+    totalFloors: 'Total Floors',
+    // Удобства
     cellar: 'Cellar',
     balcony: 'Balcony',
     balconyNumber: 'Balcony Number',
+    balconySize: 'Balcony Size (m²)',
     terrace: 'Terrace',
+    terraceSize: 'Terrace Size (m²)',
     parking: 'Parking',
     parkingPlaces: 'Parking Places',
     garden: 'Garden',
-    gardenSquareMeters: 'Garden Area',
+    gardenSquareMeters: 'Garden Area (m²)',
     elevator: 'Elevator',
-    heating: 'Heating',
+    // Коммуникации
+    heating: 'Heating Type',
+    heatingType: 'Heating Type (alt)',
     water: 'Water',
     electricity: 'Electricity',
     gas: 'Gas',
     sewerage: 'Sewerage',
+    // Энергоэффективность
+    energyClass: 'Energy Class',
+    // Расстояния
+    walkingDistanceMetro: 'Walk to Metro (min)',
+    metroStation: 'Metro Station',
+    walkingDistancePark: 'Walk to Park (min)',
+    parkName: 'Park Name',
+    walkingDistanceShops: 'Walk to Shops (min)',
+    walkingDistanceSchools: 'Walk to Schools (min)',
+    // Финансы
+    condoFees: 'Condo Fees (€/month)',
+    // Состояние
+    condition: 'Condition',
+    yearBuilt: 'Year Built',
+    yearRenovated: 'Year Renovated',
+    // Дополнительно
     extraInfo: 'Extra Info'
 };
 
@@ -48,11 +78,14 @@ interface DetailsSectionProps {
 }
 
 // Группируем поля
-const addressFields = ['street', 'flatNumber', 'postalCode', 'community', 'province'];
-const mainFields = ['squareMeters', 'levels', 'rooms', 'floor'];
-const amenityFields = ['cellar', 'balcony', 'balconyNumber', 'parking', 'parkingPlaces', 'terrace'];
+const addressFields = ['street', 'flatNumber', 'postalCode', 'community', 'province', 'city', 'neighborhood'];
+const mainFields = ['squareMeters', 'levels', 'rooms', 'bedrooms', 'bathrooms', 'floor', 'totalFloors'];
+const amenityFields = ['cellar', 'balcony', 'balconyNumber', 'balconySize', 'parking', 'parkingPlaces', 'terrace', 'terraceSize'];
 const outdoorFields = ['garden', 'gardenSquareMeters'];
 const facilitiesFields = ['elevator', 'heating', 'water', 'electricity', 'gas', 'sewerage'];
+const energyFinanceFields = ['energyClass', 'condoFees'];
+const locationDetailsFields = ['walkingDistanceMetro', 'metroStation', 'walkingDistancePark', 'parkName', 'walkingDistanceShops', 'walkingDistanceSchools'];
+const conditionFields = ['condition', 'yearBuilt', 'yearRenovated'];
 const extraInfoField = 'extraInfo';
 
 const DetailsSection: React.FC<DetailsSectionProps> = ({
@@ -118,12 +151,12 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
             [fieldName]: value
         }));
         
-        setChangedFields(prev => new Set(prev).add(fieldName));
+        setChangedFields(prev => new Set(prev).add(String(fieldName)));
         
         // Вызываем callback с обновленными данными
         if (onDetailsChange) {
             const updatedDetails = { ...details, [fieldName]: value };
-            const updatedChangedFields = new Set(changedFields).add(fieldName);
+            const updatedChangedFields = new Set(changedFields).add(String(fieldName));
             onDetailsChange(updatedDetails, updatedChangedFields);
         }
     }, [details, changedFields, onDetailsChange]);
@@ -141,16 +174,22 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
         onNextStep();
     };
 
-    const renderFieldComponent = (fieldName: keyof IPropertyDetails, fieldValue: any) => {
+    const renderFieldComponent = (fieldName: keyof IPropertyDetails, fieldValue: any, style?: React.CSSProperties) => {
         let target = null;
         let label = fieldLabels[fieldName];
         
         switch (fieldName) {
+            // Строковые поля (текстовые инпуты)
             case 'street':
             case 'flatNumber':
             case 'postalCode':
             case 'community':
-            case 'province': {
+            case 'province':
+            case 'city':
+            case 'neighborhood':
+            case 'address':
+            case 'metroStation':
+            case 'parkName': {
                 target = (
                     <Input
                         key={fieldName}
@@ -159,19 +198,17 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
                         size='large'
                         value={fieldValue || ''}
                         onChange={(e) => handleFieldChange(fieldName, e.target.value)}
-                        autoComplete={
-                            fieldName === 'street' ? 'street-address' :
-                            fieldName === 'flatNumber' ? 'flat' :
-                            fieldName === 'postalCode' ? 'postal-code' :
-                            fieldName === 'community' ? 'community' :
-                            fieldName === 'province' ? 'province' : 'off'
-                        }
+                        style={{width: '50%', ...style}}
                     />
                 );
                 break;
             }
+            
+            // Площади (специальные инпуты для м²)
             case 'squareMeters':
-            case 'gardenSquareMeters': {
+            case 'gardenSquareMeters':
+            case 'balconySize':
+            case 'terraceSize': {
                 target = (
                     <SquareMeterInput
                         key={fieldName}
@@ -181,29 +218,52 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
                     />
                 );
                 break;
-            } 
+            }
+            
+            // Числовые поля
             case 'levels':
             case 'rooms':
+            case 'bedrooms':
+            case 'bathrooms':
             case 'floor':
+            case 'totalFloors':
             case 'balconyNumber':
-            case 'parkingPlaces': {
+            case 'parkingPlaces':
+            case 'walkingDistanceMetro':
+            case 'walkingDistancePark':
+            case 'walkingDistanceShops':
+            case 'walkingDistanceSchools':
+            case 'condoFees':
+            case 'yearBuilt':
+            case 'yearRenovated': {
+                const minValue = fieldName === 'floor' ? -5 : 0;
+                const maxValue = 
+                    fieldName === 'floor' ? 99 :
+                    fieldName === 'totalFloors' ? 99 :
+                    fieldName === 'levels' ? 10 :
+                    fieldName === 'yearBuilt' || fieldName === 'yearRenovated' ? 2030 :
+                    fieldName === 'condoFees' ? 10000 :
+                    fieldName.startsWith('walkingDistance') ? 120 :
+                    20;
+                    
                 target = (
                     <NumberInput
                         key={fieldName}
                         value={fieldValue || 0}
                         onChange={(val) => handleFieldChange(fieldName, val)}
-                        min={fieldName === 'floor' ? -5 : 0}
-                        max={fieldName === 'floor' ? 99 : fieldName === 'levels' ? 10 : 20}
+                        min={minValue}
+                        max={maxValue}
                     />
                 );
                 break;
             }
+            
+            // Boolean поля (toggle)
             case 'cellar':
             case 'balcony':
             case 'parking':
             case 'garden':
             case 'elevator':
-            case 'heating':
             case 'water':
             case 'electricity':
             case 'gas':
@@ -218,6 +278,56 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
                 );
                 break;
             }
+            
+            // Heating (select)
+            case 'heating':
+            case 'heatingType': {
+                target = (
+                    <Select
+                        key={fieldName}
+                        value={fieldValue || undefined}
+                        onChange={(val) => handleFieldChange(fieldName, val)}
+                        placeholder="Select heating type"
+                        size="large"
+                        style={{ width: '50%' }}
+                        options={HEATING_TYPES.map(h => ({ value: h.value, label: h.label }))}
+                    />
+                );
+                break;
+            }
+            
+            // Energy Class (select)
+            case 'energyClass': {
+                target = (
+                    <Select
+                        key={fieldName}
+                        value={fieldValue || undefined}
+                        onChange={(val) => handleFieldChange(fieldName, val)}
+                        placeholder="Select energy class"
+                        size="large"
+                        style={{ width: '50%' }}
+                        options={ENERGY_CLASSES.map(e => ({ value: e.value, label: e.label }))}
+                    />
+                );
+                break;
+            }
+            
+            // Condition (select)
+            case 'condition': {
+                target = (
+                    <Select
+                        key={fieldName}
+                        value={fieldValue || undefined}
+                        onChange={(val) => handleFieldChange(fieldName, val)}
+                        placeholder="Select condition"
+                        size="large"
+                        style={{ width: '50%' }}
+                        options={CONDITION_TYPES.map(c => ({ value: c.value, label: c.label }))}
+                    />
+                );
+                break;
+            }
+            
             default:
                 target = null;
                 break;
@@ -253,7 +363,7 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
                     <h3 className={styles['sectionTitle']}>Address</h3>
                     <div className={styles['inputs-container']}>
                         {addressFields.map(fieldName => {
-                            return renderFieldComponent(fieldName as keyof IPropertyDetails, details[fieldName]);
+                            return renderFieldComponent(fieldName as keyof IPropertyDetails, details[fieldName], { width: '100%' });
                         })}
                     </div>
                 </div>
@@ -278,17 +388,17 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
                         <div className={styles['property-types-container']}>
                             {amenityFields.map(fieldName => {
                                 if (details.hasOwnProperty(fieldName)) {
-                                    // return renderFieldComponent(fieldName as keyof IPropertyDetails, details[fieldName]);
-                                    return (
-                                        <div 
-                                            key={fieldName}
-                                            className={classNames(styles['property-type-item'], !!details[fieldName] && styles['_active'])}
-                                            onClick={() => handleFieldChange(fieldName as keyof IPropertyDetails, !!details[fieldName] ? false : true)}
-                                        >
-                                            {!!details[fieldName] ? <IoBookmark size={22} /> : <IoBookmarkOutline size={22} />}
-                                            <div>{fieldName}</div>
-                                        </div>
-                                    )
+                                    return renderFieldComponent(fieldName as keyof IPropertyDetails, details[fieldName]);
+                                    // return (
+                                    //     <div 
+                                    //         key={fieldName}
+                                    //         className={classNames(styles['property-type-item'], !!details[fieldName] && styles['_active'])}
+                                    //         onClick={() => handleFieldChange(fieldName as keyof IPropertyDetails, !!details[fieldName] ? false : true)}
+                                    //     >
+                                    //         {!!details[fieldName] ? <IoBookmark size={22} /> : <IoBookmarkOutline size={22} />}
+                                    //         <div>{fieldName}</div>
+                                    //     </div>
+                                    // )
                                 }
                                 return null;
                             })}
@@ -325,6 +435,39 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
                         </div>
                     </div>
                 )}
+
+                {/* Локация - детали (ВАЖНО для AI качества!) */}
+                <div className={styles.section}>
+                    <h3 className={styles.sectionTitle}>
+                        Location Details
+                        <span className={styles.priority}>⭐ High Priority for AI</span>
+                    </h3>
+                    <div className={styles.fields}>
+                        {locationDetailsFields.map(fieldName => {
+                            return renderFieldComponent(fieldName as keyof IPropertyDetails, details[fieldName]);
+                        })}
+                    </div>
+                </div>
+
+                {/* Энергоэффективность и финансы */}
+                <div className={styles.section}>
+                    <h3 className={styles.sectionTitle}>Energy & Finance</h3>
+                    <div className={styles.fields}>
+                        {energyFinanceFields.map(fieldName => {
+                            return renderFieldComponent(fieldName as keyof IPropertyDetails, details[fieldName]);
+                        })}
+                    </div>
+                </div>
+
+                {/* Состояние и год постройки */}
+                <div className={styles.section}>
+                    <h3 className={styles.sectionTitle}>Condition & Year</h3>
+                    <div className={styles.fields}>
+                        {conditionFields.map(fieldName => {
+                            return renderFieldComponent(fieldName as keyof IPropertyDetails, details[fieldName]);
+                        })}
+                    </div>
+                </div>
 
                 {/* Описание */}
                 <div className={styles['section']}>

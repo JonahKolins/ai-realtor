@@ -2,6 +2,7 @@ import { EventEmitter } from "../../core/event/EventEmmiter";
 import { EventHandle } from "../../core/event/EventHandle";
 import { ListingType, ListingStatus, IListing, requestUpdateListing, requestCreateListingDraft, ICreateListingDraftResponse } from "../../api/network/listings";
 import { PropertyType } from "@/classes/listings/Listing.types";
+import { IListingUserFields } from "@/classes/listings/ListingUserFields";
 
 export interface IListingDraftData {
     // ID для AI генерации
@@ -12,18 +13,8 @@ export interface IListingDraftData {
     title?: string;
     description?: string;
     price?: number;
-    // Пользовательские поля
-    userFields?: {
-        city?: string;
-        address?: string;
-        floor?: number;
-        rooms?: number;
-        area?: number;
-        balcony?: boolean;
-        parking?: boolean;
-        extraInfo?: string;
-        [key: string]: any;
-    };
+    // Пользовательские поля - V2.0 для AI mustCover системы
+    userFields?: IListingUserFields;
     // Медиа файлы
     photos?: string[];
     documents?: string[];
