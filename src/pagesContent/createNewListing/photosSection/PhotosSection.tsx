@@ -6,9 +6,11 @@ import classNames from 'classnames';
 
 interface PhotosSectionProps {
     onPhotosChange: (photos: PhotoFile[]) => void;
+    className?: string;
+    labelEnabled?: boolean;
 }
 
-const PhotosSection = React.memo<PhotosSectionProps>(({ onPhotosChange }) => {
+const PhotosSection = React.memo<PhotosSectionProps>(({ onPhotosChange, className, labelEnabled }) => {
     const [descriptionEnabled, setDescriptionEnabled] = useState<boolean>(false);
     const [aiAnalysisEnabled, setAiAnalysisEnabled] = useState<boolean>(false);
     const [photos, setPhotos] = useState<PhotoFile[]>([]);
@@ -30,10 +32,12 @@ const PhotosSection = React.memo<PhotosSectionProps>(({ onPhotosChange }) => {
     };
 
     return (
-        <div className={styles['photos-section']}>
-            <label htmlFor="photos" className={styles['photos-section-label']}>
-                Photos
-            </label>
+        <div className={classNames(styles['photos-section'], className)}>
+            {labelEnabled && (
+                <label htmlFor="photos" className={styles['photos-section-label']}>
+                    Photos
+                </label>
+            )}
             <div className={styles['photos-container']}>
                 <PhotoUploader 
                     onFilesChange={handlePhotosChange} 

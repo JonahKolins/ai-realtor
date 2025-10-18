@@ -1,0 +1,93 @@
+.listing-preview
+	display: flex
+	flex-direction: column
+	gap: 16px
+
+	.info-container
+		display: flex
+		flex-direction: column
+		padding: 8px 0
+
+		.title
+			font-size: 16px
+			line-height: 20px
+			font-weight: 600
+			color: var(--baseText)
+			margin-bottom: 8px
+		
+		.photos-preview
+			display: flex
+			
+			&__large-photo-container
+				display: flex
+				justify-content: center
+				align-items: center
+				width: 100%
+				height: 230px
+				background-color: #f8f9fa
+				border-radius: 16px
+				overflow: hidden
+				margin-right: 8px
+				color: rgb(205, 205, 205)
+				
+			&__small-photos-container
+				display: flex
+				flex-direction: column
+				gap: 8px
+
+			&__small-photo
+				flex: 1
+				width: 140px
+				display: flex
+				justify-content: center
+				align-items: center
+				background-color: #f8f9fa
+				border-radius: 16px
+				overflow: hidden
+				color: rgb(205, 205, 205)
+
+		.user-fields-container
+			display: flex
+			align-items: center
+			flex-wrap: wrap
+			margin-top: 8px
+			gap: 8px
+
+			&__item
+				display: flex
+				align-items: center
+				min-width: 100px
+				gap: 8px
+				padding: 8px 12px
+				border: 1px solid #e1e8e8
+				border-radius: 8px
+				background-color: #f8f9fa
+				transition: all 0.3s ease
+
+				.icon
+					display: flex
+					align-items: center
+					justify-content: center
+					width: 24px
+					height: 24px
+					color: var(--baseText)
+
+				.key
+					color: var(--baseText)
+					font-size: 14px
+					font-weight: 600
+					line-height: 16px
+
+				.text
+					color: var(--baseText)
+					font-size: 14px
+					font-weight: 500
+					line-height: 16px
+					width: 100%
+
+		.description
+			font-size: 14px
+			line-height: 20px
+			font-weight: 500
+			color: var(--baseText-darkGray)
+			margin-top: 8px

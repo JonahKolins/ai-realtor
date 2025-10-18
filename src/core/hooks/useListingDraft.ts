@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { EventHandle } from '../event/EventHandle';
-import { ListingDraft, IListingDraftData } from '../../classes/listings/ListingDraft';
+import { ListingDraft, IListingDraftData, IUpdateListingInfo } from '../../classes/listings/ListingDraft';
 import { ListingDraftManager } from '../../classes/listings/ListingDraftManager';
 import { ListingType } from '../../api/network/listings';
 import { PropertyType } from '@/classes/listings/Listing.types';
@@ -22,7 +21,7 @@ export interface UseListingDraftReturn {
     // Методы обновления данных
     updateListingType: (type: ListingType) => void;
     updatePropertyType: (type: PropertyType) => void;
-    updateBasicInfo: (info: { title?: string; description?: string; price?: number }) => void;
+    updateBasicInfo: (info: IUpdateListingInfo) => void;
     updatePhotos: (photos: string[]) => void;
     updateUserFields: (fields: Record<string, any>) => void;
     
@@ -139,7 +138,7 @@ export function useListingDraft(options: UseListingDraftOptions = {}): UseListin
         draft?.updatePropertyType(type);
     }, [draft]);
 
-    const updateBasicInfo = useCallback((info: { title?: string; description?: string; price?: number }) => {
+    const updateBasicInfo = useCallback((info: IUpdateListingInfo) => {
         draft?.updateBasicInfo(info);
     }, [draft]);
 

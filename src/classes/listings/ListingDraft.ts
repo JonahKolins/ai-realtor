@@ -10,14 +10,29 @@ export interface IListingDraftData {
     // Основные данные
     type?: ListingType;
     propertyType?: PropertyType;
+    // Основные данные для AI генерации
     title?: string;
+    summary?: string;
     description?: string;
+    highlights?: string[];
+    keywords?: string[],
+    metaDescription?: string,
+    // Цена
     price?: number;
     // Пользовательские поля - V2.0 для AI mustCover системы
     userFields?: IListingUserFields;
     // Медиа файлы
     photos?: string[];
     documents?: string[];
+}
+
+export interface IUpdateListingInfo {
+    title?: string;
+    summary?: string;
+    description?: string;
+    highlights?: string[];
+    keywords?: string[],
+    metaDescription?: string,
 }
 
 export interface IDraftApiResponse {
@@ -106,7 +121,7 @@ export class ListingDraft {
         this._scheduleAutoSave();
     }
 
-    public updateBasicInfo(info: { title?: string; description?: string; price?: number }): void {
+    public updateBasicInfo(info: IUpdateListingInfo): void {
         Object.assign(this._data, info);
         this._emitDataChanged();
         this._scheduleAutoSave();
@@ -289,6 +304,11 @@ export class ListingDraft {
             const updateData: any = {};
             
             if (this._data.title !== undefined) updateData.title = this._data.title;
+            if (this._data.summary !== undefined) updateData.summary = this._data.summary;
+            if (this._data.description !== undefined) updateData.description = this._data.description;
+            if (this._data.highlights !== undefined) updateData.highlights = this._data.highlights;
+            if (this._data.keywords !== undefined) updateData.keywords = this._data.keywords;
+            if (this._data.metaDescription !== undefined) updateData.metaDescription = this._data.metaDescription;
             if (this._data.price !== undefined) updateData.price = this._data.price;
             if (this._data.type !== undefined) updateData.type = this._data.type;
             if (this._data.propertyType !== undefined) updateData.propertyType = this._data.propertyType;
@@ -310,7 +330,11 @@ export class ListingDraft {
                     type: response.type,
                     propertyType: this._data.propertyType,
                     title: response.title,
+                    summary: this._data.summary,
                     description: this._data.description,
+                    highlights: this._data.highlights,
+                    keywords: this._data.keywords,
+                    metaDescription: this._data.metaDescription,
                     price: response.price,
                     userFields: response.userFields,
                     photos: this._data.photos,

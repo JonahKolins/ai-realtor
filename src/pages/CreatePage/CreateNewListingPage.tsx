@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './CreateNewListingPage.module.sass';
-import { IoCashOutline, IoImagesOutline, IoDocumentOutline, IoReaderOutline, IoCheckmarkCircleOutline, IoLockClosedOutline } from "react-icons/io5";
+import { IoCashOutline, IoImagesOutline, IoDocumentOutline, IoReaderOutline } from "react-icons/io5";
 import classNames from 'classnames';
 import PhotosSection from '@/pagesContent/createNewListing/photosSection/PhotosSection';
 import ListingTypeSection from '@/pagesContent/createNewListing/listingTypeSection/ListingTypeSection';
@@ -8,6 +8,10 @@ import DetailsSection from '@/pagesContent/createNewListing/detailsSection/Detai
 import PreviewSection from '@/pagesContent/createNewListing/previewSection/PreviewSection';
 import { PropertyType } from '@/classes/listings/Listing.types';
 import { useListingDraft } from '@/core/hooks/useListingDraft';
+import { IUpdateListingInfo } from '@/classes/listings/ListingDraft';
+import { ListingPreview } from '@/pagesContent/createNewListing/listingPreview/ListingPreview';
+import { CreateListingInfo } from '@/pagesContent/createNewListing/createListingInfo/CreateListingInfo';
+import { Button } from 'antd';
 
 interface INavigationItem {
     title: string;
@@ -54,7 +58,7 @@ const CreateNewListingPage: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState<NavigationItemAlias>(navigationItems[0].alias);
     const [createListingStarted, setCreateListingStarted] = useState<boolean>(false);
 
-    const {draft, data, updateListingType, updatePropertyType, updateUserFields, saveDraft, forceClearDraft} = useListingDraft({
+    const {draft, data, saving, updateListingType, updatePropertyType, updateUserFields, updateBasicInfo, saveDraft, forceClearDraft} = useListingDraft({
         autoSave: true,
         createOnMount: true,
         initialData: {
@@ -84,6 +88,12 @@ const CreateNewListingPage: React.FC = () => {
         // Обновляем userFields в черновике
         updateUserFields(changedData);
     };
+
+    // обработка изменений основных данных
+    const handleUpdateBasicInfo = (info: IUpdateListingInfo) => {
+        console.log('Basic info changed:', info);
+        updateBasicInfo(info);
+    }
 
     //
     const handleNextStep = (nextTab: NavigationItemAlias) => {
@@ -159,7 +169,12 @@ const CreateNewListingPage: React.FC = () => {
                 )
             case NavigationItemAlias.PREVIEW:
                 return (
-                    <PreviewSection data={data} />
+                    <PreviewSection 
+                        data={data}
+                        isLoading={saving}
+                        updateInfo={handleUpdateBasicInfo}
+                        saveDraft={saveDraft}
+                    />
                 )
             default: return null;
         }
@@ -175,8 +190,31 @@ const CreateNewListingPage: React.FC = () => {
                         {renderNavigationTabs()}
                     </div>
                 </div>
-                <div className={styles['create-container__form-wrapper']}>
-                    {renderContentByTabId()}
+                <div className={styles['create-container__main-content']}>
+                    <div className={styles['create-container__main-content__body']}>
+                        <div className={styles['create-container__form-wrapper']}>
+                            {/* {renderContentByTabId()} */}
+                            <div className={styles['create-container__form-wrapper__header']}>
+                                <div className={styles['create-container__form-wrapper__header__breadcrumbs']}>
+                                    <div>Home - New Listing</div>
+                                </div>
+                                <div className={styles['create-container__form-wrapper__header__info']}>
+                                    <div className={styles['info-container']}>
+                                        <h1 className={styles['info-title']}>New Listing</h1>
+                                        <div className={styles['info-description']}>Generate a new listing</div>
+                                    </div>
+                                    <div className={styles['create-container__form-wrapper__header__buttons']}>
+                                        <Button>Save draft</Button>
+                                        {/* <Button>Publish</Button> */}
+                                    </div>
+                                </div>
+                            </div>
+                            <CreateListingInfo data={data} saveDraft={saveDraft} />
+                        </div>
+                        <div className={styles['create-container__preview-wrapper']}>
+                            <ListingPreview data={data} />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

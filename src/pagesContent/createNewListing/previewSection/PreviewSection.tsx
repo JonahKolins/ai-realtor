@@ -1,18 +1,19 @@
 import React, { useState, useCallback } from 'react';
 import styles from './PreviewSection.module.sass';
-import { IListingDraftData } from '../../../classes/listings/ListingDraft';
+import { IListingDraftData, IUpdateListingInfo } from '../../../classes/listings/ListingDraft';
 import Button from '@/designSystem/button/Button';
 import CopyButton from '@/components/CopyButton';
 import { IoChevronDown, IoChevronUp, IoCloseOutline, IoSparklesOutline } from 'react-icons/io5';
 import { requestGenerateAIDescription, AILocale, AITone, AILength, IAIGenerationResponse } from '@/api/network/listings';
+import { IPropertyDetails } from '@/classes/listings/propertyDetails';
 import classNames from 'classnames';
 
 interface PreviewSectionProps {
     data?: IListingDraftData;
+    isLoading: boolean;
     onPublish?: () => void;
-    onSaveDraft?: () => void;
-    isComplete?: boolean;
-    saving?: boolean;
+    updateInfo: (info: IUpdateListingInfo) => void;
+    saveDraft: () => void;
     saveError?: string | null;
 }
 
@@ -32,14 +33,14 @@ interface AIGenerationError {
 
 const PreviewSection: React.FC<PreviewSectionProps> = ({
     data = {},
+    isLoading,
     onPublish,
-    onSaveDraft,
-    isComplete = false,
-    saving = false,
+    updateInfo,
+    saveDraft,
     saveError = null
 }) => {
     // Если нет обработчиков, показываем базовый превью
-    const isBasicMode = !onPublish && !onSaveDraft;
+    const isBasicMode = !onPublish && !updateInfo;
 
     // AI Generation states
     const [generationState, setGenerationState] = useState<GenerationState>('idle');
@@ -180,6 +181,20 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
         navigator.clipboard.writeText(fullText);
     }, [aiResult]);
 
+    const handleSaveInfo = useCallback(() => {
+        if (updateInfo && aiResult) {
+            updateInfo({
+                title: aiResult.title,
+                summary: aiResult.summary,
+                description: aiResult.description,
+                highlights: aiResult.highlights,
+                keywords: aiResult.seo.keywords,
+                metaDescription: aiResult.seo.metaDescription
+            });
+            saveDraft();
+        }
+    }, [updateInfo, aiResult]);
+
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Preview & AI Generation</h1>
@@ -191,36 +206,36 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
             <div className={styles.preview}>
                 <div className={styles.field}>
                     <label className={styles.label}>Type:</label>
-                    <span className={styles.value}>{data.type || 'Not selected'}</span>
+                    <div className={styles.value}>{data.type || 'Not selected'}</div>
                 </div>
 
                 <div className={styles.field}>
                     <label className={styles.label}>Property Type:</label>
-                    <span className={styles.value}>{data.propertyType || 'Not selected'}</span>
+                    <div className={styles.value}>{data.propertyType || 'Not selected'}</div>
                 </div>
 
                 <div className={styles.field}>
                     <label className={styles.label}>Title:</label>
-                    <span className={styles.value}>{data.title || 'Not specified'}</span>
+                    <div className={styles.value}>{data.title || 'Not specified'}</div>
                 </div>
 
                 <div className={styles.field}>
                     <label className={styles.label}>Description:</label>
-                    <span className={styles.value}>{data.description || 'Not specified'}</span>
+                    <div className={styles.value}>{data.description || 'Not specified'}</div>
                 </div>
 
                 <div className={styles.field}>
                     <label className={styles.label}>Price:</label>
-                    <span className={styles.value}>
+                    <div className={styles.value}>
                         {data.price ? `$${data.price.toLocaleString()}` : 'Not specified'}
-                    </span>
+                    </div>
                 </div>
 
                 <div className={styles.field}>
                     <label className={styles.label}>Photos:</label>
-                    <span className={styles.value}>
+                    <div className={styles.value}>
                         {data.photos?.length ? `${data.photos.length} photo(s)` : 'No photos'}
-                    </span>
+                    </div>
                 </div>
             </div>
 
@@ -232,6 +247,7 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
                         AI Description Generator
                     </h2>
                 </div>
+                <div>{isLoading && 'Loading...'}</div>
 
                 {generationState === 'idle' && (
                     <div className={styles.aiForm}>
@@ -453,6 +469,14 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
                                     </div>
                                 </div>
                             )}
+                        </div>
+
+                        <div className={styles.resultBlock}>
+                            <div className={styles.blockContent}>
+                                <Button onClick={handleSaveInfo} className={styles.saveAllButton}>
+                                    Save All
+                                </Button>
+                            </div>
                         </div>
 
                         {/* Disclaimer */}

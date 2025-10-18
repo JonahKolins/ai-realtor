@@ -36,13 +36,14 @@ export interface IListingUserFields {
     balconyNumber?: number;     // Количество балконов
     terrace?: boolean;          // Есть терраса
     terraceSize?: number;       // Размер террасы в m²
+    terraceNumber?: number;     // Количество террас
+    garden?: boolean;           // Сад
+    gardenSquareMeters?: number; // Площадь сада в m²
     
     // Удобства
     cellar?: boolean;           // Погреб/кладовая
     parking?: boolean;          // Парковка
     parkingPlaces?: number;     // Количество мест
-    garden?: boolean;           // Сад
-    gardenSquareMeters?: number;
     
     // Коммуникации
     heating?: string;           // Тип отопления: "autonomo a metano", "centralizzato", "pompa di calore"
@@ -54,6 +55,7 @@ export interface IListingUserFields {
     
     // Энергоэффективность (Optional для mustCover)
     energyClass?: string;       // "A", "B", "C", "D", "E", "F", "G"
+    energyConsumption?: number; // Расход энергии в кВт/ч
     
     // Расстояния пешком (Optional для mustCover - ВАЖНО!)
     walkingDistanceMetro?: number;   // Минут до метро
