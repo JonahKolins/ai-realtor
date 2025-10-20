@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./ListingPreview.module.sass";
 import { IListingDraftData } from "@/classes/listings/ListingDraft";
 import { IListingUserFields } from "@/classes/listings/ListingUserFields";
+import { PropertyMap } from "@/components/PropertyMap";
 import { 
     IoImageOutline, 
     IoBedOutline, 
@@ -245,7 +246,19 @@ export const ListingPreview = React.memo<ListingPreviewProps>(({ data }) => {
                     <span className={styles['section-text']}>Posizione</span>
                 </div>
                 <div className={styles['description-text']}>
-                    {data.userFields?.address || data.userFields?.city || 'Posizione da specificare'}
+                    {[
+                        data.userFields?.address,
+                        data.userFields?.postalCode,
+                        data.userFields?.city
+                    ].filter(Boolean).join(', ') || 'Posizione da specificare'}
+                </div>
+                <div className={styles['map-container']}>
+                    <PropertyMap 
+                        address={data.userFields?.address}
+                        postalCode={data.userFields?.postalCode}
+                        city={data.userFields?.city}
+                        height="250px"
+                    />
                 </div>
             </div>
 
@@ -292,7 +305,19 @@ export const ListingPreview = React.memo<ListingPreviewProps>(({ data }) => {
                     <span className={styles['section-text']}>Posizione</span>
                 </div>
                 <div className={styles['description-text']}>
-                    <p>{data.userFields?.address || data.userFields?.city || 'Posizione da specificare'}</p>
+                    <p>{[
+                        data.userFields?.address,
+                        data.userFields?.postalCode,
+                        data.userFields?.city
+                    ].filter(Boolean).join(', ') || 'Posizione da specificare'}</p>
+                </div>
+                <div className={styles['map-container']}>
+                    <PropertyMap 
+                        address={data.userFields?.address}
+                        postalCode={data.userFields?.postalCode}
+                        city={data.userFields?.city}
+                        height="200px"
+                    />
                 </div>
             </div>
 
