@@ -60,6 +60,10 @@ export interface IListingUserFields {
     // Расстояния пешком (Optional для mustCover - ВАЖНО!)
     walkingDistanceMetro?: number;   // Минут до метро
     metroStation?: string;           // Название станции метро
+    walkingDistanceTrain?: number;   // Минут до поезда
+    trainStation?: string;           // Название станции поезда
+    walkingDistanceBus?: number;     // Минут до автобуса
+    busStation?: string;             // Название станции автобуса
     walkingDistancePark?: number;    // Минут до парка
     parkName?: string;               // Название парка
     walkingDistanceShops?: number;   // Минут до магазинов

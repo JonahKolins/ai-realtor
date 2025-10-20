@@ -1,93 +1,299 @@
+// Общие стили для превью
 .listing-preview
 	display: flex
 	flex-direction: column
 	gap: 16px
+	background: white
+	max-width: 800px
+	margin: 0 auto
 
-	.info-container
+	// Переключатель режимов
+	.view-mode-toggle
 		display: flex
-		flex-direction: column
-		padding: 8px 0
-
-		.title
-			font-size: 16px
-			line-height: 20px
-			font-weight: 600
-			color: var(--baseText)
-			margin-bottom: 8px
+		justify-content: center
 		
-		.photos-preview
-			display: flex
+		button
+			padding: 8px 16px
+			margin: 0 4px
+			border: 1px solid #ccc
+			background: white
+			border-radius: 6px
+			cursor: pointer
+			color: #333
+			font-size: 14px
 			
-			&__large-photo-container
-				display: flex
-				justify-content: center
-				align-items: center
-				width: 100%
-				height: 230px
-				background-color: #f8f9fa
-				border-radius: 16px
-				overflow: hidden
-				margin-right: 8px
-				color: rgb(205, 205, 205)
+			&.active
+				background: #333
+				color: white
+			
+			&:hover
+				background: #f5f5f5
 				
-			&__small-photos-container
-				display: flex
-				flex-direction: column
-				gap: 8px
+			&.active:hover
+				background: #333
 
-			&__small-photo
-				flex: 1
-				width: 140px
+	// Заголовок превью
+	.preview-header
+		text-align: center
+		
+		h3
+			margin: 0 0 8px 0
+			font-size: 20px
+			color: #333
+
+	// Контейнер для режимов
+	.preview-container
+		overflow: hidden
+		background: #fafafa
+		border-radius: 8px
+		&._mobile
+			border: 1px solid #e1e8e8
+
+	// === ДЕСКТОПНЫЙ РЕЖИМ ===
+	.desktop-view
+		padding: 16px
+		background: white
+		
+		.photos-gallery
+			display: grid
+			grid-template-columns: 2fr 1fr
+			gap: 8px
+			margin-bottom: 20px
+			height: 300px
+			
+			.main-photo
 				display: flex
 				justify-content: center
 				align-items: center
-				background-color: #f8f9fa
-				border-radius: 16px
+				background: #f5f5f5
+				border-radius: 8px
 				overflow: hidden
-				color: rgb(205, 205, 205)
+				position: relative
+				
+				img
+					width: 100%
+					height: 100%
+					object-fit: cover
+					
+			.side-photos
+				display: grid
+				grid-template-rows: repeat(4, 1fr)
+				gap: 8px
+				
+				.side-photo
+					display: flex
+					justify-content: center
+					align-items: center
+					background: #f5f5f5
+					border-radius: 8px
+					overflow: hidden
+					
+					img
+						width: 100%
+						height: 100%
+						object-fit: cover
+						
+		.listing-info
+			.listing-title
+				font-size: 24px
+				font-weight: 600
+				color: #333
+				margin: 0 0 8px 0
+				
+			.price
+				font-size: 28px
+				font-weight: 700
+				color: #333
+				margin: 0 0 20px 0
+				
+		.details-grid
+			display: grid
+			grid-template-columns: 1fr 1fr
+			gap: 24px
+			margin-bottom: 20px
+			
+		.description-section
+			margin-bottom: 16px
 
-		.user-fields-container
+			.section-title
+				display: flex
+				align-items: center
+				gap: 8px
+				font-size: 18px
+				font-weight: 600
+				color: #333
+				margin: 0 0 12px 0
+				
+			.description-text
+				font-size: 15px
+				line-height: 1.6
+				color: #666
+				
+				p
+					margin: 0 0 12px 0
+					
+	// === МОБИЛЬНЫЙ РЕЖИМ ===
+	.mobile-view
+		padding: 16px
+		background: white
+		max-width: 375px
+		margin: 0 auto
+		
+		.photos-gallery
+			margin-bottom: 16px
+			
+			.main-photo
+				width: 100%
+				height: 250px
+				display: flex
+				justify-content: center
+				align-items: center
+				background: #f5f5f5
+				border-radius: 8px
+				overflow: hidden
+				margin-bottom: 8px
+				
+				img
+					width: 100%
+					height: 100%
+					object-fit: cover
+					
+			.photo-thumbnails
+				display: flex
+				gap: 8px
+				overflow-x: auto
+				
+				.thumbnail
+					min-width: 60px
+					height: 60px
+					background: #f5f5f5
+					border-radius: 4px
+					overflow: hidden
+					
+					img
+						width: 100%
+						height: 100%
+						object-fit: cover
+						
+		.listing-info
+			.listing-title
+				font-size: 20px
+				font-weight: 600
+				color: #333
+				margin: 0 0 8px 0
+				
+			.price
+				font-size: 24px
+				font-weight: 700
+				color: #333
+				margin: 0 0 16px 0
+				
+		.details-sections
+			margin-bottom: 16px
+			
+		.description-section
+			.section-title
+				display: flex
+				align-items: center
+				gap: 8px
+				font-size: 16px
+				font-weight: 600
+				color: #333
+				margin: 0 0 8px 0
+				
+			.description-text
+				font-size: 14px
+				line-height: 1.5
+				color: #666
+				
+				p
+					margin: 0 0 8px 0
+
+	// === ОБЩИЕ СТИЛИ ДЛЯ ДЕТАЛЕЙ ===
+	.details-section
+		margin-bottom: 20px
+		.section-title
+			font-size: 16px
+			font-weight: 600
+			color: #333
+			margin: 0 0 12px 0
 			display: flex
 			align-items: center
-			flex-wrap: wrap
-			margin-top: 8px
 			gap: 8px
-
-			&__item
+			
+			.section-icon
 				display: flex
 				align-items: center
-				min-width: 100px
-				gap: 8px
-				padding: 8px 12px
-				border: 1px solid #e1e8e8
-				border-radius: 8px
-				background-color: #f8f9fa
-				transition: all 0.3s ease
+				justify-content: center
+				font-size: 18px
 
-				.icon
-					display: flex
-					align-items: center
-					justify-content: center
-					width: 24px
-					height: 24px
-					color: var(--baseText)
-
-				.key
-					color: var(--baseText)
-					font-size: 14px
-					font-weight: 600
-					line-height: 16px
-
-				.text
-					color: var(--baseText)
-					font-size: 14px
-					font-weight: 500
-					line-height: 16px
-					width: 100%
-
-		.description
+			.section-text
+				font-size: 16px
+				font-weight: 600
+				color: #333
+				margin-left: 8px
+				
+		.details-list
+			display: flex
+			flex-wrap: wrap
+			gap: 8px
+			
+		.detail-item
+			display: flex
+			align-items: center
+			gap: 6px
+			padding: 6px 12px
+			background: #f9f9f9
+			border: 1px solid #e5e5e5
+			border-radius: 20px
 			font-size: 14px
-			line-height: 20px
-			font-weight: 500
-			color: var(--baseText-darkGray)
-			margin-top: 8px
+			color: #333
+			
+			.detail-icon
+				font-size: 14px
+				color: #666
+				
+			.detail-text
+				font-weight: 500
+				
+		// Мобильные детали - вертикальный список
+		.mobile-view &
+			.details-list
+				flex-direction: column
+				gap: 1px
+				background: #f5f5f5
+				border-radius: 8px
+				overflow: hidden
+				
+			.detail-item
+				background: white
+				border: none
+				border-radius: 0
+				padding: 12px 16px
+				justify-content: flex-start
+				margin: 0
+				border-bottom: 1px solid #eee
+				
+				&:last-child
+					border-bottom: none
+					
+	// === ИКОНКИ И ЗАГЛУШКИ ===
+	.photo-placeholder
+		display: flex
+		flex-direction: column
+		justify-content: center
+		align-items: center
+		color: #ccc
+		
+		.placeholder-icon
+			font-size: 48px
+			margin-bottom: 8px
+			
+		.placeholder-text
+			font-size: 14px
+			
+	.empty-state
+		text-align: center
+		color: #999
+		font-style: italic
+		padding: 20px

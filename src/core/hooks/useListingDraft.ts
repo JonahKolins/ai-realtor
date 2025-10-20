@@ -19,6 +19,7 @@ export interface UseListingDraftReturn {
     isComplete: boolean;
     
     // Методы обновления данных
+    updatePrice: (price: number) => void;
     updateListingType: (type: ListingType) => void;
     updatePropertyType: (type: PropertyType) => void;
     updateBasicInfo: (info: IUpdateListingInfo) => void;
@@ -129,6 +130,10 @@ export function useListingDraft(options: UseListingDraftOptions = {}): UseListin
     /*
     *  Методы обновления данных
     */
+
+    const updatePrice = useCallback((price: number) => {
+        draft?.updatePrice(price);
+    }, [draft]);
 
     const updateListingType = useCallback((type: ListingType) => {
         draft?.updateListingType(type);
@@ -269,6 +274,7 @@ export function useListingDraft(options: UseListingDraftOptions = {}): UseListin
         isComplete: draft?.isComplete || false,
         
         // Методы обновления данных
+        updatePrice,
         updateListingType,
         updatePropertyType,
         updateBasicInfo,

@@ -7,6 +7,7 @@ import { IoChevronDown, IoChevronUp, IoCloseOutline, IoSparklesOutline } from 'r
 import { requestGenerateAIDescription, AILocale, AITone, AILength, IAIGenerationResponse } from '@/api/network/listings';
 import { IPropertyDetails } from '@/classes/listings/propertyDetails';
 import classNames from 'classnames';
+import { Select } from 'antd';
 
 interface PreviewSectionProps {
     data?: IListingDraftData;
@@ -197,48 +198,7 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Preview & AI Generation</h1>
-            <div className={styles.description}>
-                {isBasicMode ? 'Preview of your listing with AI-powered descriptions' : 'Review your listing and generate AI descriptions'}
-            </div>
-
-            {/* Basic Preview */}
-            <div className={styles.preview}>
-                <div className={styles.field}>
-                    <label className={styles.label}>Type:</label>
-                    <div className={styles.value}>{data.type || 'Not selected'}</div>
-                </div>
-
-                <div className={styles.field}>
-                    <label className={styles.label}>Property Type:</label>
-                    <div className={styles.value}>{data.propertyType || 'Not selected'}</div>
-                </div>
-
-                <div className={styles.field}>
-                    <label className={styles.label}>Title:</label>
-                    <div className={styles.value}>{data.title || 'Not specified'}</div>
-                </div>
-
-                <div className={styles.field}>
-                    <label className={styles.label}>Description:</label>
-                    <div className={styles.value}>{data.description || 'Not specified'}</div>
-                </div>
-
-                <div className={styles.field}>
-                    <label className={styles.label}>Price:</label>
-                    <div className={styles.value}>
-                        {data.price ? `$${data.price.toLocaleString()}` : 'Not specified'}
-                    </div>
-                </div>
-
-                <div className={styles.field}>
-                    <label className={styles.label}>Photos:</label>
-                    <div className={styles.value}>
-                        {data.photos?.length ? `${data.photos.length} photo(s)` : 'No photos'}
-                    </div>
-                </div>
-            </div>
-
+            <h1 className={styles.title}>Generate listing</h1>
             {/* AI Generation Section */}
             <div className={styles.aiSection}>
                 <div className={styles.aiHeader}>
@@ -253,17 +213,11 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
                     <div className={styles.aiForm}>
                         <div className={styles.formGroup}>
                             <label className={styles.formLabel}>Language</label>
-                            <select 
-                                value={settings.locale} 
-                                onChange={(e) => setSettings(prev => ({...prev, locale: e.target.value as AILocale}))}
-                                className={styles.select}
-                            >
-                                {localeOptions.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
+                            <Select
+                                options={localeOptions}
+                                value={settings.locale}
+                                onChange={(value) => setSettings(prev => ({...prev, locale: value as AILocale}))}
+                            />
                         </div>
 
                         <div className={styles.formGroup}>
@@ -303,21 +257,21 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
                                 ))}
                             </div>
                         </div>
-
-                        <Button 
-                            onClick={handleGenerateAI}
-                            className={styles.generateButton}
-                            disabled={!data.id}
-                        >
-                            <IoSparklesOutline />
-                            Genera descrizione
-                        </Button>
-
                         {!data.id && (
                             <div className={styles.warning}>
                                 Save draft first to enable AI generation
                             </div>
                         )}
+                        <div className={styles.generateButtonContainer}>
+                            <Button 
+                                onClick={handleGenerateAI}
+                                className={classNames(styles.generateButton, !data.id && styles._disabled)}
+                                disabled={!data.id}
+                            >
+                                <IoSparklesOutline />
+                                Generate listing content
+                            </Button>
+                        </div>
                     </div>
                 )}
 

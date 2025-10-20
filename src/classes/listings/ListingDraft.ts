@@ -108,6 +108,12 @@ export class ListingDraft {
     /*
     *  Методы для обновления данных
     */
+
+    public updatePrice(price: number): void {
+        this._data.price = price;
+        this._emitDataChanged();
+        this._scheduleAutoSave();
+    }
     
     public updateListingType(type: ListingType): void {
         this._data.type = type;
@@ -289,14 +295,20 @@ export class ListingDraft {
     private async _saveDraftToServer(): Promise<IDraftApiResponse> {
         if (!this._id) {
             // Создаем новый черновик
-            if (!this._data.type || !this._data.propertyType) {
-                throw new Error('Type and propertyType are required for creating a new draft');
-            }
+            const updateData: any = {};
             
-            const response = await requestCreateListingDraft({
-                type: this._data.type,
-                propertyType: this._data.propertyType
-            });
+            if (this._data.title !== undefined) updateData.title = this._data.title;
+            if (this._data.summary !== undefined) updateData.summary = this._data.summary;
+            if (this._data.description !== undefined) updateData.description = this._data.description;
+            if (this._data.highlights !== undefined) updateData.highlights = this._data.highlights;
+            if (this._data.keywords !== undefined) updateData.keywords = this._data.keywords;
+            if (this._data.metaDescription !== undefined) updateData.metaDescription = this._data.metaDescription;
+            if (this._data.price !== undefined) updateData.price = this._data.price;
+            if (this._data.type !== undefined) updateData.type = this._data.type;
+            if (this._data.propertyType !== undefined) updateData.propertyType = this._data.propertyType;
+            if (this._data.userFields !== undefined) updateData.userFields = this._data.userFields;
+            
+            const response = await requestCreateListingDraft(updateData);
             
             return response;
         } else {

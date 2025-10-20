@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import styles from './CreateNewListingPage.module.sass';
 import { IoCashOutline, IoImagesOutline, IoDocumentOutline, IoReaderOutline } from "react-icons/io5";
-import classNames from 'classnames';
-import PhotosSection from '@/pagesContent/createNewListing/photosSection/PhotosSection';
-import ListingTypeSection from '@/pagesContent/createNewListing/listingTypeSection/ListingTypeSection';
-import DetailsSection from '@/pagesContent/createNewListing/detailsSection/DetailsSection';
-import PreviewSection from '@/pagesContent/createNewListing/previewSection/PreviewSection';
-import { PropertyType } from '@/classes/listings/Listing.types';
 import { useListingDraft } from '@/core/hooks/useListingDraft';
 import { IUpdateListingInfo } from '@/classes/listings/ListingDraft';
 import { ListingPreview } from '@/pagesContent/createNewListing/listingPreview/ListingPreview';
-import { CreateListingInfo } from '@/pagesContent/createNewListing/createListingInfo/CreateListingInfo';
-import { Button } from 'antd';
+import { Tabs, TabsProps } from 'antd';
+import { CreateListingPropertyDetails } from '@/pagesContent/createNewListing/createListingPropertyDetails/CreateListingPropertyDetails';
+import { CreateListingDetails } from '@/pagesContent/createNewListing/createListingData/CreateListingDetails';
+import PreviewSection from '@/pagesContent/createNewListing/previewSection/PreviewSection';
+import styles from './CreateNewListingPage.module.sass';
+import classNames from 'classnames';
 
 interface INavigationItem {
     title: string;
@@ -25,7 +22,23 @@ enum NavigationItemAlias {
     PHOTOS = 'photos',
     DETAILS = 'details',
     PREVIEW = 'preview',
+    GENERATE = 'generate',
 }
+
+const tabItems: TabsProps['items'] = [
+    {
+        key: NavigationItemAlias.LISTING,
+        label: 'Listing details',
+    },
+    {
+        key: NavigationItemAlias.DETAILS,
+        label: 'Property details',
+    },
+    {
+        key: NavigationItemAlias.GENERATE,
+        label: 'Generate',
+    }
+  ];
 
 const navigationItems: INavigationItem[] = [
     {
@@ -56,15 +69,13 @@ const navigationItems: INavigationItem[] = [
 
 const CreateNewListingPage: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState<NavigationItemAlias>(navigationItems[0].alias);
+    const [selectedListingTab, setSelectedListingTab] = useState<NavigationItemAlias>(tabItems[0].key as NavigationItemAlias);
     const [createListingStarted, setCreateListingStarted] = useState<boolean>(false);
 
-    const {draft, data, saving, updateListingType, updatePropertyType, updateUserFields, updateBasicInfo, saveDraft, forceClearDraft} = useListingDraft({
+    const {draft, data, saving, updateListingType, updatePropertyType, updateUserFields, updateBasicInfo, updatePrice, saveDraft, forceClearDraft} = useListingDraft({
         autoSave: true,
         createOnMount: true,
-        initialData: {
-            type: 'sale',
-            propertyType: PropertyType.HOUSE,
-        },
+        initialData: {}
     });
 
     useEffect(() => {
@@ -140,34 +151,30 @@ const CreateNewListingPage: React.FC = () => {
         ))
     }
 
-    const renderContentByTabId = () => {
-        switch (selectedTab) {
+    const handleTabChange = (key: string) => {
+        setSelectedListingTab(key as NavigationItemAlias);
+    }
+
+    const renderListingTabsContent = () => {
+        switch (selectedListingTab) {
             case NavigationItemAlias.LISTING:
                 return (
-                    <ListingTypeSection 
+                    <CreateListingDetails
                         data={data}
-                        updateListingType={updateListingType} 
-                        updatePropertyType={updatePropertyType} 
-                        onNextStep={handleStartCreateListing} 
-                        saveDraft={saveDraft}
-                    />
-                )
-            case NavigationItemAlias.PHOTOS:
-                return (
-                    <PhotosSection 
+                        onListingTypeChange={updateListingType}
+                        onPriceChange={updatePrice} 
                         onPhotosChange={() => {}}
                     />
                 )
             case NavigationItemAlias.DETAILS:
                 return (
-                    <DetailsSection 
-                        data={data}
+                    <CreateListingPropertyDetails 
+                        data={data} 
+                        updatePropertyType={updatePropertyType} 
                         onDetailsChange={handleDetailsChange}
-                        onNextStep={handleDetailsSectionNextStep}
-                        saveDraft={saveDraft}
                     />
                 )
-            case NavigationItemAlias.PREVIEW:
+            case NavigationItemAlias.GENERATE:
                 return (
                     <PreviewSection 
                         data={data}
@@ -193,7 +200,6 @@ const CreateNewListingPage: React.FC = () => {
                 <div className={styles['create-container__main-content']}>
                     <div className={styles['create-container__main-content__body']}>
                         <div className={styles['create-container__form-wrapper']}>
-                            {/* {renderContentByTabId()} */}
                             <div className={styles['create-container__form-wrapper__header']}>
                                 <div className={styles['create-container__form-wrapper__header__breadcrumbs']}>
                                     <div>Home - New Listing</div>
@@ -201,15 +207,16 @@ const CreateNewListingPage: React.FC = () => {
                                 <div className={styles['create-container__form-wrapper__header__info']}>
                                     <div className={styles['info-container']}>
                                         <h1 className={styles['info-title']}>New Listing</h1>
-                                        <div className={styles['info-description']}>Generate a new listing</div>
-                                    </div>
-                                    <div className={styles['create-container__form-wrapper__header__buttons']}>
-                                        <Button>Save draft</Button>
-                                        {/* <Button>Publish</Button> */}
+                                        <Tabs 
+                                            defaultActiveKey="photos" 
+                                            items={tabItems}
+                                            onChange={handleTabChange}
+                                            tabBarStyle={{ marginBottom: '0px' }}
+                                        />
                                     </div>
                                 </div>
                             </div>
-                            <CreateListingInfo data={data} saveDraft={saveDraft} />
+                            {renderListingTabsContent()}
                         </div>
                         <div className={styles['create-container__preview-wrapper']}>
                             <ListingPreview data={data} />

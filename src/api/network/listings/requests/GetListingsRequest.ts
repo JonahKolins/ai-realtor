@@ -1,7 +1,10 @@
 import GetRequest from "../../../main/requests/GetRequest";
 import JSONResponseHandler from "../../../main/handlers/JSONResponseHandler";
 
-export type ListingType = 'sale' | 'rent';
+export enum ListingType {
+    SALE = 'sale',
+    RENT = 'rent',
+}
 export type ListingStatus = 'draft' | 'ready' | 'archived';
 
 export interface IListingUserFields {

@@ -99,7 +99,7 @@ export const CreateListingInfo = React.memo<CreateListingInfoProps>(({ data, sav
             </div>
             <div className={styles['create-listing-info__section']}>
                 {/* <div className={styles['section-title']}>Property details</div> */}
-                <CreateListingPropertyDetails />
+                {/* <CreateListingPropertyDetails /> */}
             </div>
             <div className={styles['create-listing-info__section']}>
                 <div className={styles['section-title']}>Listing</div>

@@ -1,12 +1,20 @@
 import PostRequest from "../../../main/requests/PostRequest";
 import JSONResponseHandler from "@/api/main/handlers/JSONResponseHandler";
-import { ListingStatus, ListingType } from "./GetListingsRequest";
+import { IListingUserFields, ListingStatus, ListingType } from "./GetListingsRequest";
 import { PropertyType } from "@/classes/listings/Listing.types";
 import { IListingDraftData } from "@/classes/listings/ListingDraft";
 
 export interface ICreateListingDraftRequest {
-    type: ListingType;
-    propertyType: PropertyType;
+    type?: ListingType;
+    propertyType?: PropertyType;
+    title?: string;
+    summary?: string;
+    description?: string;
+    highlights?: string[];
+    keywords?: string[];
+    metaDescription?: string;
+    price?: number;
+    userFields?: IListingUserFields;
 }
 
 export interface ICreateListingDraftResponse {

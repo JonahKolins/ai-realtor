@@ -1,19 +1,13 @@
-.create-listing-property-details
+.create-listing-details
 	display: flex
 	flex-direction: column
 	gap: 12px
-	padding: 16px 24px 32px 24px
+	padding: 24px 24px 32px 24px
 
 	&__section-main-title
 		font-size: 18px
 		font-weight: 600
 		color: var(--baseText)
-
-	&__section-second-title
-		font-size: 16px
-		font-weight: 600
-		color: var(--baseText-darkGray)
-		margin: 8px 0
 
 	&__section-content
 		display: flex
@@ -69,3 +63,45 @@
 				width: 100%
 				gap: 32px
 				margin-left: 16px
+
+	&__photos-section
+		margin: 0
+		padding: 0
+
+.switcher-container
+	display: flex
+	align-items: flex-start
+	padding: 12px 16px
+	border-radius: 8px
+	border: 1px solid #bbc4c4
+	cursor: pointer
+	transition: all 0.3s ease
+	margin-bottom: 8px
+
+	&._active
+		border-color: rgb(36, 36, 36)
+		
+		.switch
+			background-color: var(--baseText)
+
+	.switch
+		width: 24px
+		margin-top: 2px
+
+	.switcher-content
+		display: flex
+		flex-direction: column
+		gap: 4px
+		margin-left: 16px
+
+		.switcher-caption
+			font-size: 16px
+			font-weight: 500
+			line-height: 20px
+			color: var(--baseText)
+
+		.switcher-text
+			font-size: 14px
+			font-weight: 400
+			line-height: 16px
+			color: var(--baseText-darkGray)

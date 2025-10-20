@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { IoBedOutline, IoBusinessOutline, IoCashOutline, IoCellularOutline, IoHomeOutline, IoCarSportOutline, IoFileTrayFullOutline, IoStorefrontOutline, IoCartOutline} from "react-icons/io5";
 import Button from '@/designSystem/button/Button';
 import { PropertyType } from '@/classes/listings/Listing.types';
-import { ListingType } from '@/api/network/listings';
+import { ListingType } from '@/api/network/listings/requests/GetListingsRequest';
 import { IListingDraftData } from '@/classes/listings/ListingDraft';
 import styles from './ListingTypeSection.module.sass';
 import classNames from 'classnames';
@@ -14,8 +14,8 @@ export interface IListingTypeData {
 }
 
 const listingTypes: IListingTypeData[] = [
-    {label: 'Sell', value: 'sale', icon: <IoCashOutline size={24} />},
-    {label: 'Rent out', value: 'rent', icon: <IoCellularOutline size={24} />},
+    {label: 'Sale', value: ListingType.SALE, icon: <IoCashOutline size={24} />},
+    {label: 'Rent out', value: ListingType.RENT, icon: <IoCellularOutline size={24} />},
 ];
 
 export interface IPropertyData {
@@ -55,7 +55,7 @@ interface ListingTypeSectionProps {
 const ListingTypeSection = React.memo<ListingTypeSectionProps>(({ data, onNextStep, updateListingType, updatePropertyType, saveDraft }) => {
     const {type, propertyType} = data || {};
 
-    const [selectedListing, setSelectedListing] = useState<ListingType>(type || 'sale');
+    const [selectedListing, setSelectedListing] = useState<ListingType>(type || ListingType.SALE);
 
     // получение типов недвижимости в зависимости от типа объявления
     const propertyTypesByListingType = useMemo(() => {
