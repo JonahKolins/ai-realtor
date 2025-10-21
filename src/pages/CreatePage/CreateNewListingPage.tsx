@@ -6,7 +6,7 @@ import { ListingPreview } from '@/pagesContent/createNewListing/listingPreview/L
 import { Tabs, TabsProps } from 'antd';
 import { CreateListingPropertyDetails } from '@/pagesContent/createNewListing/createListingPropertyDetails/CreateListingPropertyDetails';
 import { CreateListingDetails } from '@/pagesContent/createNewListing/createListingData/CreateListingDetails';
-import PreviewSection from '@/pagesContent/createNewListing/previewSection/PreviewSection';
+import { GenerateListingSection } from '@/pagesContent/createNewListing/generateListingSection/GenerateListingSection';
 import styles from './CreateNewListingPage.module.sass';
 import classNames from 'classnames';
 
@@ -176,10 +176,11 @@ const CreateNewListingPage: React.FC = () => {
                 )
             case NavigationItemAlias.GENERATE:
                 return (
-                    <PreviewSection 
+                    <GenerateListingSection 
                         data={data}
                         isLoading={saving}
                         updateInfo={handleUpdateBasicInfo}
+                        updateUserFields={updateUserFields}
                         saveDraft={saveDraft}
                     />
                 )

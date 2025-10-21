@@ -1,19 +1,22 @@
-import React, { useState, useCallback } from 'react';
-import styles from './PreviewSection.module.sass';
+import React, { useState, useCallback, useEffect } from 'react';
+import styles from './GenerateListingSection.module.sass';
 import { IListingDraftData, IUpdateListingInfo } from '../../../classes/listings/ListingDraft';
 import Button from '@/designSystem/button/Button';
 import CopyButton from '@/components/CopyButton';
-import { IoChevronDown, IoChevronUp, IoCloseOutline, IoSparklesOutline } from 'react-icons/io5';
+import { IoChevronDown, IoChevronUp, IoCloseOutline, IoSparklesOutline, IoCreateOutline, IoSaveOutline, IoAddOutline } from 'react-icons/io5';
 import { requestGenerateAIDescription, AILocale, AITone, AILength, IAIGenerationResponse } from '@/api/network/listings';
 import { IPropertyDetails } from '@/classes/listings/propertyDetails';
 import classNames from 'classnames';
-import { Select } from 'antd';
+import { Select, Input } from 'antd';
 
-interface PreviewSectionProps {
+const { TextArea } = Input;
+
+interface GenerateListingSectionProps {
     data?: IListingDraftData;
     isLoading: boolean;
     onPublish?: () => void;
     updateInfo: (info: IUpdateListingInfo) => void;
+    updateUserFields?: (fields: Record<string, any>) => void;
     saveDraft: () => void;
     saveError?: string | null;
 }
@@ -32,11 +35,12 @@ interface AIGenerationError {
     retryAfter?: number;
 }
 
-const PreviewSection: React.FC<PreviewSectionProps> = ({
+export const GenerateListingSection: React.FC<GenerateListingSectionProps> = ({
     data = {},
     isLoading,
     onPublish,
     updateInfo,
+    updateUserFields,
     saveDraft,
     saveError = null
 }) => {
@@ -48,6 +52,23 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
     const [aiResult, setAiResult] = useState<IAIGenerationResponse | null>(null);
     const [generationError, setGenerationError] = useState<AIGenerationError | null>(null);
     const [showSEOSection, setShowSEOSection] = useState(false);
+    
+    // Editing states
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [isEditingDescription, setIsEditingDescription] = useState(false);
+    const [editedTitle, setEditedTitle] = useState('');
+    const [editedDescription, setEditedDescription] = useState('');
+    
+    // AI wishes state
+    const [showWishesForm, setShowWishesForm] = useState(false);
+    const [aiWishes, setAiWishes] = useState(data.userFields?.aiGenerationWishes || '');
+    
+    // Синхронизируем пожелания при изменении данных
+    useEffect(() => {
+        if (data.userFields?.aiGenerationWishes !== undefined) {
+            setAiWishes(data.userFields.aiGenerationWishes);
+        }
+    }, [data.userFields?.aiGenerationWishes]);
     
     // AI Generation settings
     const [settings, setSettings] = useState<AIGenerationSettings>({
@@ -196,6 +217,156 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
         }
     }, [updateInfo, aiResult]);
 
+    // Editing handlers
+    const handleEditTitle = useCallback(() => {
+        if (aiResult) {
+            setEditedTitle(aiResult.title);
+            setIsEditingTitle(true);
+        }
+    }, [aiResult]);
+
+    const handleSaveTitle = useCallback(() => {
+        if (updateInfo && aiResult) {
+            const updatedResult = { ...aiResult, title: editedTitle };
+            setAiResult(updatedResult);
+            updateInfo({
+                title: editedTitle
+            });
+            setIsEditingTitle(false);
+            saveDraft();
+        }
+    }, [updateInfo, aiResult, editedTitle, saveDraft]);
+
+    const handleCancelEditTitle = useCallback(() => {
+        setIsEditingTitle(false);
+        setEditedTitle('');
+    }, []);
+
+    const handleEditDescription = useCallback(() => {
+        if (aiResult) {
+            setEditedDescription(aiResult.description);
+            setIsEditingDescription(true);
+        }
+    }, [aiResult]);
+
+    const handleSaveDescription = useCallback(() => {
+        if (updateInfo && aiResult) {
+            const updatedResult = { ...aiResult, description: editedDescription };
+            setAiResult(updatedResult);
+            updateInfo({
+                description: editedDescription
+            });
+            setIsEditingDescription(false);
+            saveDraft();
+        }
+    }, [updateInfo, aiResult, editedDescription, saveDraft]);
+
+    const handleCancelEditDescription = useCallback(() => {
+        setIsEditingDescription(false);
+        setEditedDescription('');
+    }, []);
+
+    // AI wishes handlers
+    const handleShowWishesForm = useCallback(() => {
+        setShowWishesForm(true);
+    }, []);
+
+    const handleSaveWishes = useCallback(() => {
+        if (updateUserFields) {
+            updateUserFields({ aiGenerationWishes: aiWishes });
+            saveDraft();
+        }
+        setShowWishesForm(false);
+    }, [updateUserFields, aiWishes, saveDraft]);
+
+    const handleCancelWishes = useCallback(() => {
+        setAiWishes(data.userFields?.aiGenerationWishes || '');
+        setShowWishesForm(false);
+    }, [data.userFields?.aiGenerationWishes]);
+
+    const handleGenerateWithWishes = useCallback(async () => {
+        if (!data.id) {
+            setGenerationError({
+                code: 'NO_LISTING_ID',
+                message: 'Listing ID is required for AI generation'
+            });
+            return;
+        }
+
+        // Сначала сохраняем пожелания
+        if (updateUserFields && aiWishes.trim()) {
+            updateUserFields({ aiGenerationWishes: aiWishes });
+        }
+
+        setGenerationState('loading');
+        setGenerationError(null);
+
+        try {
+            const result = await requestGenerateAIDescription({
+                listingId: data.id,
+                ...settings
+            });
+
+            setAiResult(result);
+            setGenerationState('success');
+            setShowWishesForm(false);
+        } catch (error: any) {
+            console.error('AI generation error:', error);
+            
+            let generationError: AIGenerationError = {
+                code: 'UNKNOWN_ERROR',
+                message: 'An unknown error occurred'
+            };
+
+            // Handle specific error types (same as original handleGenerateAI)
+            if (error.response) {
+                const { status, data: errorData } = error.response;
+                
+                switch (status) {
+                    case 400:
+                        generationError = {
+                            code: 'VALIDATION_ERROR',
+                            message: 'Invalid parameters provided'
+                        };
+                        break;
+                    case 404:
+                        generationError = {
+                            code: 'LISTING_NOT_FOUND',
+                            message: 'Listing not found'
+                        };
+                        break;
+                    case 429:
+                        generationError = {
+                            code: 'RATE_LIMIT_EXCEEDED',
+                            message: 'Too many requests. Please try again later.',
+                            retryAfter: errorData?.retryAfter || 60
+                        };
+                        break;
+                    case 502:
+                        generationError = {
+                            code: 'AI_PROVIDER_ERROR',
+                            message: 'AI service is temporarily unavailable. Please try again later.'
+                        };
+                        break;
+                    case 500:
+                        generationError = {
+                            code: 'SERVER_ERROR',
+                            message: 'Internal server error. Please try again later.'
+                        };
+                        break;
+                    default:
+                        generationError = {
+                            code: 'UNKNOWN_ERROR',
+                            message: `Error: ${status}`
+                        };
+                }
+            }
+
+            setGenerationError(generationError);
+            setGenerationState('error');
+        }
+    }, [data.id, settings, aiWishes, updateUserFields]);
+
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Generate listing</h1>
@@ -322,6 +493,10 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
                                 >
                                     Copy All
                                 </button>
+                                <Button onClick={handleShowWishesForm} className={styles.wishesButton}>
+                                    <IoAddOutline />
+                                    Generate with Wishes
+                                </Button>
                                 <Button onClick={handleResetGeneration} className={styles.newGenerationButton}>
                                     Generate New
                                 </Button>
@@ -333,12 +508,50 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
                             <div className={styles.blockHeader}>
                                 <h4 className={styles.blockTitle}>Title</h4>
                                 <div className={styles.blockMeta}>
-                                    <span className={styles.charCount}>{aiResult.title.length} characters</span>
-                                    <CopyButton text={aiResult.title} size="small" />
+                                    <span className={styles.charCount}>{isEditingTitle ? editedTitle.length : aiResult.title.length} characters</span>
+                                    {!isEditingTitle && (
+                                        <button 
+                                            onClick={handleEditTitle}
+                                            className={styles.editButton}
+                                            title="Edit title"
+                                        >
+                                            <IoCreateOutline />
+                                        </button>
+                                    )}
+                                    <CopyButton text={isEditingTitle ? editedTitle : aiResult.title} size="small" />
                                 </div>
                             </div>
                             <div className={styles.blockContent}>
-                                <p className={styles.titleText}>{aiResult.title}</p>
+                                {isEditingTitle ? (
+                                    <div className={styles.editingContainer}>
+                                        <Input
+                                            value={editedTitle}
+                                            onChange={(e) => setEditedTitle(e.target.value)}
+                                            className={styles.editInput}
+                                            autoFocus
+                                        />
+                                        <div className={styles.editActions}>
+                                            <button 
+                                                onClick={handleSaveTitle}
+                                                className={styles.saveButton}
+                                                title="Save changes"
+                                            >
+                                                <IoSaveOutline />
+                                                Save
+                                            </button>
+                                            <button 
+                                                onClick={handleCancelEditTitle}
+                                                className={styles.cancelButton}
+                                                title="Cancel editing"
+                                            >
+                                                <IoCloseOutline />
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className={styles.titleText}>{aiResult.title}</p>
+                                )}
                             </div>
                         </div>
 
@@ -357,14 +570,55 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
                         <div className={styles.resultBlock}>
                             <div className={styles.blockHeader}>
                                 <h4 className={styles.blockTitle}>Full Description</h4>
-                                <CopyButton text={aiResult.description} size="small" />
+                                <div className={styles.blockMeta}>
+                                    {!isEditingDescription && (
+                                        <button 
+                                            onClick={handleEditDescription}
+                                            className={styles.editButton}
+                                            title="Edit description"
+                                        >
+                                            <IoCreateOutline />
+                                        </button>
+                                    )}
+                                    <CopyButton text={isEditingDescription ? editedDescription : aiResult.description} size="small" />
+                                </div>
                             </div>
                             <div className={styles.blockContent}>
-                                <div className={styles.descriptionText}>
-                                    {aiResult.description.split('\n').map((paragraph, index) => (
-                                        <p key={index}>{paragraph}</p>
-                                    ))}
-                                </div>
+                                {isEditingDescription ? (
+                                    <div className={styles.editingContainer}>
+                                        <TextArea
+                                            value={editedDescription}
+                                            onChange={(e) => setEditedDescription(e.target.value)}
+                                            className={styles.editTextArea}
+                                            rows={6}
+                                            autoFocus
+                                        />
+                                        <div className={styles.editActions}>
+                                            <button 
+                                                onClick={handleSaveDescription}
+                                                className={styles.saveButton}
+                                                title="Save changes"
+                                            >
+                                                <IoSaveOutline />
+                                                Save
+                                            </button>
+                                            <button 
+                                                onClick={handleCancelEditDescription}
+                                                className={styles.cancelButton}
+                                                title="Cancel editing"
+                                            >
+                                                <IoCloseOutline />
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className={styles.descriptionText}>
+                                        {aiResult.description.split('\n').map((paragraph, index) => (
+                                            <p key={index}>{paragraph}</p>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -439,6 +693,68 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
                         </div>
                     </div>
                 )}
+
+                {/* AI Wishes Form */}
+                {showWishesForm && (
+                    <div className={styles.wishesForm}>
+                        <div className={styles.wishesHeader}>
+                            <h3 className={styles.wishesTitle}>
+                                <IoAddOutline className={styles.icon} />
+                                Add Your Wishes for New Generation
+                            </h3>
+                            <p className={styles.wishesSubtitle}>
+                                Tell AI what you'd like to see different or emphasize in the new description
+                            </p>
+                        </div>
+                        
+                        <div className={styles.wishesContent}>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>
+                                    Your wishes and preferences:
+                                </label>
+                                <TextArea
+                                    value={aiWishes}
+                                    onChange={(e) => setAiWishes(e.target.value)}
+                                    placeholder="Example: Emphasize the modern renovations, mention the quiet neighborhood, add more details about natural light, etc."
+                                    rows={4}
+                                    className={styles.wishesTextArea}
+                                />
+                            </div>
+                            
+                            {data.userFields?.aiGenerationWishes && (
+                                <div className={styles.savedWishes}>
+                                    <span className={styles.savedWishesLabel}>Previous wishes:</span>
+                                    <span className={styles.savedWishesText}>"{data.userFields.aiGenerationWishes}"</span>
+                                </div>
+                            )}
+                            
+                            <div className={styles.wishesActions}>
+                                <Button 
+                                    onClick={handleGenerateWithWishes}
+                                    className={styles.generateWithWishesButton}
+                                    disabled={!data.id}
+                                >
+                                    <IoSparklesOutline />
+                                    Generate with Wishes
+                                </Button>
+                                <Button 
+                                    onClick={handleSaveWishes}
+                                    className={styles.saveWishesButton}
+                                >
+                                    <IoSaveOutline />
+                                    Save Wishes Only
+                                </Button>
+                                <button 
+                                    onClick={handleCancelWishes}
+                                    className={styles.cancelWishesButton}
+                                >
+                                    <IoCloseOutline />
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {saveError && (
@@ -457,5 +773,3 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
         </div>
     );
 };
-
-export default PreviewSection;

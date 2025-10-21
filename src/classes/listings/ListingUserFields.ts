@@ -80,6 +80,9 @@ export interface IListingUserFields {
     // Дополнительно
     extraInfo?: string;
     
+    // AI генерация
+    aiGenerationWishes?: string; // Пожелания пользователя для AI генерации
+    
     // Расширяемость
     [key: string]: any;
 }
