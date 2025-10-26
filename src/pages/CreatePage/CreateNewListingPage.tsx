@@ -1,76 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { IoCashOutline, IoImagesOutline, IoDocumentOutline, IoReaderOutline } from "react-icons/io5";
 import { useListingDraft } from '@/core/hooks/useListingDraft';
 import { IUpdateListingInfo } from '@/classes/listings/ListingDraft';
 import { ListingPreview } from '@/pagesContent/createNewListing/listingPreview/ListingPreview';
-import { Tabs, TabsProps } from 'antd';
 import { CreateListingPropertyDetails } from '@/pagesContent/createNewListing/createListingPropertyDetails/CreateListingPropertyDetails';
 import { CreateListingDetails } from '@/pagesContent/createNewListing/createListingData/CreateListingDetails';
 import { GenerateListingSection } from '@/pagesContent/createNewListing/generateListingSection/GenerateListingSection';
+import { IoCheckmarkCircleOutline, IoChevronForward } from 'react-icons/io5';
 import styles from './CreateNewListingPage.module.sass';
 import classNames from 'classnames';
 
-interface INavigationItem {
-    title: string;
-    alias: NavigationItemAlias;
-    icon: JSX.Element | null;
-    initial: boolean;
-}
-
 enum NavigationItemAlias {
     LISTING = 'listing',
-    PHOTOS = 'photos',
     DETAILS = 'details',
-    PREVIEW = 'preview',
     GENERATE = 'generate',
+    PREVIEW = 'preview',
+    PUBLISH = 'publish',
 }
 
-const tabItems: TabsProps['items'] = [
-    {
-        key: NavigationItemAlias.LISTING,
-        label: 'Listing details',
-    },
-    {
-        key: NavigationItemAlias.DETAILS,
-        label: 'Property details',
-    },
-    {
-        key: NavigationItemAlias.GENERATE,
-        label: 'Generate',
-    }
-  ];
+interface StepInfo {
+    key: NavigationItemAlias;
+    title: string;
+    isCompleted: boolean;
+    isActive: boolean;
+}
 
-const navigationItems: INavigationItem[] = [
-    {
-        title: 'Listing',
-        alias: NavigationItemAlias.LISTING,
-        icon: <IoCashOutline size={22} />,
-        initial: true,
-    },
-    {
-        title: 'Photos',
-        alias: NavigationItemAlias.PHOTOS,
-        icon: <IoImagesOutline size={22} />,
-        initial: false,
-    },
-    {
-        title: 'Details',
-        alias: NavigationItemAlias.DETAILS,
-        icon: <IoDocumentOutline size={22} />,
-        initial: false,
-    },
-    {
-        title: 'Preview',
-        alias: NavigationItemAlias.PREVIEW,
-        icon: <IoReaderOutline size={22} />,
-        initial: false,
-    }
-]
+
 
 const CreateNewListingPage: React.FC = () => {
-    const [selectedTab, setSelectedTab] = useState<NavigationItemAlias>(navigationItems[0].alias);
-    const [selectedListingTab, setSelectedListingTab] = useState<NavigationItemAlias>(tabItems[0].key as NavigationItemAlias);
-    const [createListingStarted, setCreateListingStarted] = useState<boolean>(false);
+    const [currentStep, setCurrentStep] = useState<NavigationItemAlias>(NavigationItemAlias.LISTING);
 
     const {draft, data, saving, updateListingType, updatePropertyType, updateUserFields, updateBasicInfo, updatePrice, saveDraft, forceClearDraft} = useListingDraft({
         autoSave: true,
@@ -106,123 +63,221 @@ const CreateNewListingPage: React.FC = () => {
         updateBasicInfo(info);
     }
 
-    //
-    const handleNextStep = (nextTab: NavigationItemAlias) => {
-        setSelectedTab(nextTab);
-    }
+    // проверка готовности шага "Listing details"
+    const isListingDetailsCompleted = (): boolean => {
+        return !!data?.type;
+    };
 
-    // обработка нажатия на кнопку "Далее" в секции "Listing"
-    const handleStartCreateListing = () => {
-        setCreateListingStarted(true);
-        handleNextStep(NavigationItemAlias.PHOTOS);
-    }
+    // проверка готовности шага "Property details"
+    const isPropertyDetailsCompleted = (): boolean => {
+        if (!data?.userFields) return false;
+        // Проверяем ключевые поля из "Area and layout"
+        const requiredFields = ['area', 'rooms', 'floor']; // Примерные поля
+        return requiredFields.some(field => data.userFields[field] != null && data.userFields[field] !== '');
+    };
 
-    // обработка нажатия на кнопку "Далее" в секции "Details"
-    const handleDetailsSectionNextStep = () => {
-        handleNextStep(NavigationItemAlias.PREVIEW);
-    }
+    // проверка готовности шага "Generate"
+    const isGenerateCompleted = (): boolean => {
+        return !!(data?.title || data?.description || data?.summary);
+    };
 
-    const renderNavigationTabs = () => {
-        return navigationItems.map((item: INavigationItem) => (
-            <div 
-                key={item.alias} 
-                className={classNames(
-                    styles['navigation-item'],
-                    selectedTab === item.alias && styles['_active'],
-                    // !item.initial && !createListingStarted && styles['_disabled']
-                )}
-                onClick={() => setSelectedTab(item.alias)}
-            >
-                <div className={styles['navigation-item-content']}>
-                    <div className={styles['navigation-item-icon']}>{item.icon}</div>
-                    <div className={styles['navigation-item-title']}>{item.title}</div>
-                </div>
-                {/* {item.initial && createListingStarted && (
-                    <div className={styles['navigation-item-completed']}>
-                        <IoCheckmarkCircleOutline size={20} />
-                    </div>
-                )} */}
-                {/* {!item.initial && !createListingStarted && (
-                    <div className={styles['navigation-item-not-started']}>
-                        <IoLockClosedOutline size={18} />
-                    </div>
-                )} */}
-            </div>
-        ))
-    }
+    // получение информации о всех шагах
+    const getStepsInfo = (): StepInfo[] => {
+        return [
+            {
+                key: NavigationItemAlias.LISTING,
+                title: 'Listing details',
+                isCompleted: isListingDetailsCompleted(),
+                isActive: currentStep === NavigationItemAlias.LISTING
+            },
+            {
+                key: NavigationItemAlias.DETAILS,
+                title: 'Property details',
+                isCompleted: isPropertyDetailsCompleted(),
+                isActive: currentStep === NavigationItemAlias.DETAILS
+            },
+            {
+                key: NavigationItemAlias.GENERATE,
+                title: 'Generate',
+                isCompleted: isGenerateCompleted(),
+                isActive: currentStep === NavigationItemAlias.GENERATE
+            },
+            {
+                key: NavigationItemAlias.PREVIEW,
+                title: 'Preview',
+                isCompleted: false, // Всегда доступен без проверки
+                isActive: currentStep === NavigationItemAlias.PREVIEW
+            },
+            {
+                key: NavigationItemAlias.PUBLISH,
+                title: 'Publish',
+                isCompleted: false, // Всегда доступен без проверки
+                isActive: currentStep === NavigationItemAlias.PUBLISH
+            }
+        ];
+    };
 
-    const handleTabChange = (key: string) => {
-        setSelectedListingTab(key as NavigationItemAlias);
-    }
+    // переход к следующему шагу
+    const goToNextStep = () => {
+        const steps = Object.values(NavigationItemAlias);
+        const currentIndex = steps.indexOf(currentStep);
+        if (currentIndex < steps.length - 1) {
+            setCurrentStep(steps[currentIndex + 1]);
+        }
+    };
 
-    const renderListingTabsContent = () => {
-        switch (selectedListingTab) {
+    // переход к конкретному шагу
+    const goToStep = (step: NavigationItemAlias) => {
+        setCurrentStep(step);
+    };
+
+
+    const renderCurrentStepContent = () => {
+        switch (currentStep) {
             case NavigationItemAlias.LISTING:
                 return (
-                    <CreateListingDetails
-                        data={data}
-                        onListingTypeChange={updateListingType}
-                        onPriceChange={updatePrice} 
-                        onPhotosChange={() => {}}
-                    />
+                    <div>
+                        <CreateListingDetails
+                            data={data}
+                            onListingTypeChange={updateListingType}
+                            onPriceChange={updatePrice} 
+                            onPhotosChange={() => {}}
+                        />
+                        <div className={styles['step-actions']}>
+                            <button 
+                                className={styles['next-button']}
+                                onClick={goToNextStep}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
                 )
             case NavigationItemAlias.DETAILS:
                 return (
-                    <CreateListingPropertyDetails 
-                        data={data} 
-                        updatePropertyType={updatePropertyType} 
-                        onDetailsChange={handleDetailsChange}
-                    />
+                    <div>
+                        <CreateListingPropertyDetails 
+                            data={data} 
+                            updatePropertyType={updatePropertyType} 
+                            onDetailsChange={handleDetailsChange}
+                        />
+                        <div className={styles['step-actions']}>
+                            <button 
+                                className={styles['next-button']}
+                                onClick={goToNextStep}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
                 )
             case NavigationItemAlias.GENERATE:
                 return (
-                    <GenerateListingSection 
-                        data={data}
-                        isLoading={saving}
-                        updateInfo={handleUpdateBasicInfo}
-                        updateUserFields={updateUserFields}
-                        saveDraft={saveDraft}
-                    />
+                    <div>
+                        <GenerateListingSection 
+                            data={data}
+                            isLoading={saving}
+                            updateInfo={handleUpdateBasicInfo}
+                            updateUserFields={updateUserFields}
+                            saveDraft={saveDraft}
+                        />
+                        <div className={styles['step-actions']}>
+                            <button 
+                                className={styles['next-button']}
+                                onClick={goToNextStep}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )
+            case NavigationItemAlias.PREVIEW:
+                return (
+                    <div>
+                        <ListingPreview data={data} />
+                        <div className={styles['step-actions']}>
+                            <button 
+                                className={styles['next-button']}
+                                onClick={goToNextStep}
+                            >
+                                Next to publish
+                            </button>
+                        </div>
+                    </div>
+                )
+            case NavigationItemAlias.PUBLISH:
+                return (
+                    <div className={styles['publish-step']}>
+                        <h2>Publish listing</h2>
+                        <p>Your listing is ready to be published. Check all the data and publish it.</p>
+                        <div className={styles['step-actions']}>
+                            <button 
+                                className={styles['publish-button']}
+                                onClick={() => {
+                                    // Логика публикации
+                                    console.log('Publishing listing...', data);
+                                }}
+                            >
+                                Publish
+                            </button>
+                        </div>
+                    </div>
                 )
             default: return null;
         }
     }
 
+    const renderCreateListingSteps = () => {
+        const steps = getStepsInfo();
+        
+        return (
+            <div className={styles['create-container__steps']}>
+                {steps.map((step, index) => {
+                    const isLast = index === steps.length - 1;
+                    return (
+                        <div 
+                            key={step.key}
+                            className={classNames(
+                                styles['create-container__steps__item'],
+                                step.isActive && styles['_active'],
+                                step.isCompleted && styles['_completed']
+                            )}
+                            onClick={() => goToStep(step.key)}
+                        >
+                            {step.isCompleted && (
+                                <div className={styles['create-container__steps__item__success-icon']}>
+                                    <IoCheckmarkCircleOutline size={18} />
+                                </div>
+                            )}
+                            <span>{step.title}</span>
+                            {!isLast && (
+                                <div className={styles['create-container__steps__item__icon']}>
+                                    <IoChevronForward size={18} />
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        )
+    }
+
     return (
         <div className={styles['page-container']}>
             <div className={styles['create-container']}>
-                <div className={styles['create-container__navigation']}>
-                    <h1 className={styles['title']}>Create a new listing</h1>
-                    <div className={styles['description']}>Simple poll for creating a new listing with photos and details</div>
-                    <div className={styles['navigation-tabs']}>
-                        {renderNavigationTabs()}
-                    </div>
-                </div>
+                {renderCreateListingSteps()}
                 <div className={styles['create-container__main-content']}>
-                    <div className={styles['create-container__main-content__body']}>
-                        <div className={styles['create-container__form-wrapper']}>
-                            <div className={styles['create-container__form-wrapper__header']}>
-                                <div className={styles['create-container__form-wrapper__header__breadcrumbs']}>
-                                    <div>Home - New Listing</div>
-                                </div>
-                                <div className={styles['create-container__form-wrapper__header__info']}>
-                                    <div className={styles['info-container']}>
-                                        <h1 className={styles['info-title']}>New Listing</h1>
-                                        <Tabs 
-                                            defaultActiveKey="photos" 
-                                            items={tabItems}
-                                            onChange={handleTabChange}
-                                            tabBarStyle={{ marginBottom: '0px' }}
-                                        />
-                                    </div>
+                    <div className={styles['create-container__main-content__header']}>
+                        <div className={styles['create-container__main-content__header__info']}>
+                            <div className={styles['info-container']}>
+                                <h1 className={styles['info-title']}>Create New Listing</h1>
+                                <div className={styles['info-description']}>
+                                    Create new listing step by step filling the form
                                 </div>
                             </div>
-                            {renderListingTabsContent()}
-                        </div>
-                        <div className={styles['create-container__preview-wrapper']}>
-                            <ListingPreview data={data} />
                         </div>
                     </div>
+                    {renderCurrentStepContent()}
                 </div>
             </div>
         </div>

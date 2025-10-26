@@ -9,10 +9,8 @@ import { ConfigProvider } from 'antd';
 
 // Ленивая загрузка страниц
 const HomePage = React.lazy(() => import('./pages/HomePage/HomePage'));
-const CreateNewListingPage = React.lazy(() => import('./pages/CreatePage/CreateNewListingPage'));
+const ServicesPage = React.lazy(() => import('./pages/ServicesPage/ServicesPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage/NotFoundPage'));
-const ListingsPage = React.lazy(() => import('./pages/ListingsPage/ListingsPage'));
-const EditPhotosPage = React.lazy(() => import('./pages/EditPhotosPage/EditPhotosPage'));
 
 const App: React.FC = () => {
     return (
@@ -53,28 +51,12 @@ const App: React.FC = () => {
                                 {/* Публичная главная страница */}
                                 <Route path="/" element={<HomePage />} />
                                 
-                                {/* Защищенные маршруты */}
+                                {/* Защищенная страница Services со всеми подстраницами */}
                                 <Route 
-                                    path="/create" 
+                                    path="/services/*" 
                                     element={
                                         <PrivateRoute>
-                                            <CreateNewListingPage />
-                                        </PrivateRoute>
-                                    } 
-                                />
-                                <Route 
-                                    path="/listings" 
-                                    element={
-                                        <PrivateRoute>
-                                            <ListingsPage />
-                                        </PrivateRoute>
-                                    } 
-                                />
-                                <Route 
-                                    path="/edit-photos" 
-                                    element={
-                                        <PrivateRoute>
-                                            <EditPhotosPage />
+                                            <ServicesPage />
                                         </PrivateRoute>
                                     } 
                                 />
