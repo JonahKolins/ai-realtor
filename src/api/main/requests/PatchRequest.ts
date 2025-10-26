@@ -22,6 +22,7 @@ export default abstract class PatchRequest<TData> {
 
     return {
       method: 'PATCH',
+      credentials: 'include' as RequestCredentials, // Поддержка HttpOnly cookies
       headers: {
         'Content-Type': 'application/json',
         ...additionalHeaders,

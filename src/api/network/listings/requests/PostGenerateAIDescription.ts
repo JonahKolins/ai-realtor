@@ -1,5 +1,5 @@
 import PostRequest from "@/api/main/requests/PostRequest";
-import JSONResponseHandler from "@/api/main/handlers/JSONResponseHandler";
+import AuthAwareResponseHandler from "@/api/main/handlers/AuthAwareResponseHandler";
 
 export type AILocale = 'it-IT' | 'ru-RU' | 'en-US';
 export type AITone = 'professionale' | 'informale' | 'premium';
@@ -52,5 +52,5 @@ export class PostGenerateAIDescription extends PostRequest<IAIGenerationResponse
         this.body = bodyData;
     }
 
-    protected responseHandler = new JSONResponseHandler<IAIGenerationResponse>();
+    protected responseHandler = new AuthAwareResponseHandler<IAIGenerationResponse>();
 }

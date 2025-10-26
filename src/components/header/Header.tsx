@@ -1,27 +1,38 @@
-import React, {memo, useMemo} from 'react';
+import React, {memo, useMemo, useState} from 'react';
 import styles from "./Header.module.sass";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import Button from "../../designSystem/button/Button";
 import { Dropdown, MenuProps } from "antd";
 import { BsBoxes } from "react-icons/bs";
 import { IoBedOutline, IoHomeOutline, IoLayersOutline } from "react-icons/io5";
+import { useAuth } from "../../contexts/AuthContext";
+import AuthModal from "../auth/AuthModal/AuthModal";
 
 interface HeaderProps {}
 
 const Header = memo<HeaderProps>(() => {
 	const location = useLocation();
 	const navigate = useNavigate();
-
-	const isLoginPages = useMemo(() => {
-		return location.pathname === '/login' || location.pathname === '/register';
-	}, [location])
+	const { isAuthenticated, user, logout, logoutAll } = useAuth();
+	const [authModalOpen, setAuthModalOpen] = useState(false);
+	const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
 
 	const handleSignIn = () => {
-		navigate('/login')
+		setAuthModalMode('login');
+		setAuthModalOpen(true);
 	}
 
 	const handleRegister = () => {
-		navigate('/register')
+		setAuthModalMode('register');
+		setAuthModalOpen(true);
+	}
+
+	const handleLogout = async () => {
+		await logout();
+	}
+
+	const handleLogoutAll = async () => {
+		await logoutAll();
 	}
 
 	const handleOpenDropDown = () => {
@@ -71,7 +82,29 @@ const Header = memo<HeaderProps>(() => {
 				key: '3',
 			},
 		]
-	}, [])
+	}, [navigate])
+
+	// Меню пользователя для авторизованных пользователей
+	const userMenu = useMemo<MenuProps["items"]>(() => {
+		return [
+			{
+				label: (
+					<div onClick={handleLogout} style={{ padding: '8px 0' }}>
+						Выйти
+					</div>
+				),
+				key: 'logout',
+			},
+			{
+				label: (
+					<div onClick={handleLogoutAll} style={{ padding: '8px 0' }}>
+						Выйти со всех устройств
+					</div>
+				),
+				key: 'logout-all',
+			},
+		]
+	}, [handleLogout, handleLogoutAll])
 
 	return (
 		<header className={styles['header']}>
@@ -81,24 +114,42 @@ const Header = memo<HeaderProps>(() => {
 						<Link to={'/'} className={styles['logo']}>
 							<BsBoxes size={22} className={styles['company-icon']} />
 						</Link>
-						{!isLoginPages && (
-							<div className={styles['auth-container']}>
+						<div className={styles['auth-container']}>
+							{isAuthenticated ? (
+								<>
+									<span style={{ marginRight: '1rem', color: '#666' }}>
+										{user?.email}
+									</span>
+									<Dropdown
+										menu={{ items: userMenu }}
+										trigger={['click']}
+										placement="bottomRight"
+									>
+										<Button 
+											className={styles['user-menu-button']}
+											onClick={() => {}} // Пустой обработчик для Dropdown
+										>
+											Аккаунт
+										</Button>
+									</Dropdown>
+								</>
+							) : (
 								<>
 									<Button
 										className={styles['sign-in-button']}
 										onClick={handleSignIn}
 									>
-										Log In
+										Вход
 									</Button>
 									<Button
 										className={styles['reg-button']}
 										onClick={handleRegister}
 									>
-										Registration
+										Регистрация
 									</Button>
 								</>
-							</div>
-						)}
+							)}
+						</div>
 					</div>
 					<div className={styles['navigation']}>
 						<Dropdown
@@ -118,6 +169,13 @@ const Header = memo<HeaderProps>(() => {
 					</div>
 				</div>
 			</div>
+			
+			{/* Модальное окно аутентификации */}
+			<AuthModal
+				isOpen={authModalOpen}
+				onClose={() => setAuthModalOpen(false)}
+				initialMode={authModalMode}
+			/>
 		</header>
 	)
 })

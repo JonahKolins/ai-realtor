@@ -15,6 +15,7 @@ export default abstract class PostFormDataRequest<TData> {
   private get requestInit(): RequestInit {
     return {
       method: 'POST',
+      credentials: 'include' as RequestCredentials, // Поддержка HttpOnly cookies
       headers: this.headers,
       body: this.formData,
       ...this.additionalRequestInit

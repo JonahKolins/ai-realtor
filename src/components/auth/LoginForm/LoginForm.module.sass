@@ -1,0 +1,100 @@
+.loginForm
+  max-width: 400px
+  margin: 0 auto
+  padding: 2rem
+  background: white
+  border-radius: 8px
+//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1)
+
+.title
+  font-size: 1.5rem
+  font-weight: 600
+  text-align: center
+  margin-bottom: 1.5rem
+  color: #333
+
+.formGroup
+  margin-bottom: 1rem
+
+.label
+  display: block
+  margin-bottom: 0.5rem
+  font-weight: 500
+  color: #555
+
+.input
+  width: 100%
+  padding: 0.75rem
+  border: 1px solid #ddd
+  border-radius: 4px
+  font-size: 1rem
+  box-sizing: border-box
+  
+  &:focus
+    outline: none
+    border-color: #000
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1)
+
+  &.hasError
+    border-color: #e74c3c
+
+.submitButton
+  width: 100%
+  padding: 0.75rem
+  background: #000
+  color: white
+  border: none
+  border-radius: 4px
+  font-size: 1rem
+  font-weight: 500
+  cursor: pointer
+  transition: background 0.2s
+
+  &:hover:not(:disabled)
+    background: #333
+
+  &:disabled
+    background: #ccc
+    cursor: not-allowed
+
+.errorList
+  margin-top: 0.5rem
+  padding: 0
+  list-style: none
+
+.errorItem
+  color: #e74c3c
+  font-size: 0.875rem
+  margin-bottom: 0.25rem
+
+.authError
+  background: #fef2f2
+  border: 1px solid #fecaca
+  color: #dc2626
+  padding: 0.75rem
+  border-radius: 4px
+  margin-bottom: 1rem
+  font-size: 0.875rem
+
+.switchForm
+  text-align: center
+  margin-top: 1.5rem
+  color: #666
+
+.switchLink
+  color: #000
+  text-decoration: underline
+  cursor: pointer
+  
+  &:hover
+    text-decoration: none
+
+.rateLimitNotice
+  background: #fff3cd
+  border: 1px solid #ffeaa7
+  color: #856404
+  padding: 0.75rem
+  border-radius: 4px
+  margin-bottom: 1rem
+  font-size: 0.875rem
+  text-align: center

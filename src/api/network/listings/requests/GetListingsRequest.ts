@@ -1,5 +1,5 @@
 import GetRequest from "../../../main/requests/GetRequest";
-import JSONResponseHandler from "../../../main/handlers/JSONResponseHandler";
+import AuthAwareResponseHandler from "../../../main/handlers/AuthAwareResponseHandler";
 
 export enum ListingType {
     SALE = 'sale',
@@ -71,5 +71,5 @@ export class GetListingsRequest extends GetRequest<IListingsResponse> {
         return `${GET_LISTINGS_URL}${queryString ? `?${queryString}` : ''}`;
     }
 
-    protected responseHandler = new JSONResponseHandler<IListingsResponse>();
+    protected responseHandler = new AuthAwareResponseHandler<IListingsResponse>();
 }

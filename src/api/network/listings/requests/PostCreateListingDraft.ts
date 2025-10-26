@@ -1,5 +1,5 @@
 import PostRequest from "../../../main/requests/PostRequest";
-import JSONResponseHandler from "@/api/main/handlers/JSONResponseHandler";
+import AuthAwareResponseHandler from "@/api/main/handlers/AuthAwareResponseHandler";
 import { IListingUserFields, ListingStatus, ListingType } from "./GetListingsRequest";
 import { PropertyType } from "@/classes/listings/Listing.types";
 import { IListingDraftData } from "@/classes/listings/ListingDraft";
@@ -36,7 +36,7 @@ export class PostCreateListingDraft extends PostRequest<ICreateListingDraftRespo
 
     protected url = POST_CREATE_LISTING_DRAFT_URL;
 
-    protected responseHandler = new JSONResponseHandler<ICreateListingDraftResponse>();
+    protected responseHandler = new AuthAwareResponseHandler<ICreateListingDraftResponse>();
 
     protected body = {
         ...this.params

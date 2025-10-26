@@ -18,6 +18,7 @@ export default abstract class GetRequest<TData> {
     return {
       ...requestInitPart,
       method: 'GET',
+      credentials: 'include' as RequestCredentials, // Поддержка HttpOnly cookies
     };
   }
 

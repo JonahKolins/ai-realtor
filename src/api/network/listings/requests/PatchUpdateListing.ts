@@ -1,5 +1,5 @@
 import PatchRequest from "../../../main/requests/PatchRequest";
-import JSONResponseHandler from "../../../main/handlers/JSONResponseHandler";
+import AuthAwareResponseHandler from "../../../main/handlers/AuthAwareResponseHandler";
 import { IListing, ListingType, ListingStatus } from "./GetListingsRequest";
 import { PropertyType } from "@/classes/listings/Listing.types";
 
@@ -35,5 +35,5 @@ export class PatchUpdateListing extends PatchRequest<IListing> {
         this.body = bodyData;
     }
 
-    protected responseHandler = new JSONResponseHandler<IListing>();
+    protected responseHandler = new AuthAwareResponseHandler<IListing>();
 }

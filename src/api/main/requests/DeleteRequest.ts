@@ -2,10 +2,8 @@ import RequestSender from '../RequestSender';
 import IResponseHandler from '../handlers/IResponseHandler';
 import { HOST, API_PREFIX } from './host';
 
-export default abstract class PostRequest<TData> {
+export default abstract class DeleteRequest<TData> {
   protected abstract url: string;
-
-  protected abstract body: unknown;
 
   protected abstract responseHandler: IResponseHandler<TData>;
 
@@ -18,16 +16,15 @@ export default abstract class PostRequest<TData> {
   protected host?: string;
 
   private get requestInit(): RequestInit {
-    const { body, additionalHeaders, additionalRequestInit } = this;
+    const { additionalHeaders, additionalRequestInit } = this;
 
     return {
-      method: 'POST',
+      method: 'DELETE',
       credentials: 'include' as RequestCredentials, // Поддержка HttpOnly cookies
       headers: {
         'Content-Type': 'application/json',
         ...additionalHeaders,
       },
-      body: JSON.stringify(body),
       ...additionalRequestInit
     };
   }

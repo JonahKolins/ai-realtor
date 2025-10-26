@@ -13,7 +13,7 @@ const isProductionBuild = getEnvVar('NODE_ENV', 'development') === 'production';
 
 // Получаем хосты из переменных окружения или используем дефолтные
 const INTERNAL_HOST = getEnvVar('REACT_APP_INTERNAL_API_HOST', 'http://ai-realtor-backend.railway.internal:8080');
-const EXTERNAL_HOST = getEnvVar('REACT_APP_API_HOST', 'https://ai-realtor-backend-production.up.railway.app');
+const EXTERNAL_HOST = getEnvVar('REACT_APP_API_HOST', 'https://api.casalabia.dev');
 
 // Выбираем хост в зависимости от окружения
 export const HOST = isRailwayEnvironment && isProductionBuild 

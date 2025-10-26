@@ -2,7 +2,8 @@ import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LoadingSpinner } from './components/LoadingSpinner/LoadingSpinner';
 import Header from './components/header/Header';
-import AuthGuard from './components/AuthGuard/AuthGuard';
+import { AuthProvider } from './contexts/AuthContext';
+import PrivateRoute from './components/auth/PrivateRoute/PrivateRoute';
 import './App.modile.sass';
 import { ConfigProvider } from 'antd';
 
@@ -43,22 +44,48 @@ const App: React.FC = () => {
                 }
             }}
         >
-            <AuthGuard>
+            <AuthProvider>
                 <Router>
                     <div className="app">
                         <Header />
                         <Suspense fallback={<LoadingSpinner />}>
                             <Routes>
+                                {/* Публичная главная страница */}
                                 <Route path="/" element={<HomePage />} />
-                                <Route path="/create" element={<CreateNewListingPage />} />
-                                <Route path="/listings" element={<ListingsPage />} />
-                                <Route path="/edit-photos" element={<EditPhotosPage />} />
+                                
+                                {/* Защищенные маршруты */}
+                                <Route 
+                                    path="/create" 
+                                    element={
+                                        <PrivateRoute>
+                                            <CreateNewListingPage />
+                                        </PrivateRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/listings" 
+                                    element={
+                                        <PrivateRoute>
+                                            <ListingsPage />
+                                        </PrivateRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/edit-photos" 
+                                    element={
+                                        <PrivateRoute>
+                                            <EditPhotosPage />
+                                        </PrivateRoute>
+                                    } 
+                                />
+                                
+                                {/* 404 страница */}
                                 <Route path="*" element={<NotFoundPage />} />
                             </Routes>
                         </Suspense>
                     </div>
                 </Router>
-            </AuthGuard>
+            </AuthProvider>
         </ConfigProvider>
     );
 };
