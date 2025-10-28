@@ -1,0 +1,39 @@
+.filters-card
+    margin-bottom: 16px
+    border-radius: 8px
+    border: 1px solid #e0e0e0
+    background: white
+
+    .ant-card-body
+        padding: 16px !important
+
+// Кастомизация Ant Design компонентов
+:global
+    .ant-select-single
+        .ant-select-selector
+            border-radius: 8px !important
+
+    .ant-input-search
+        .ant-input
+            border-radius: 8px 0 0 8px !important
+
+        .ant-input-search-button
+            border-radius: 0 8px 8px 0 !important
+
+    .ant-btn
+        border-radius: 8px !important
+
+// Адаптивность
+@media (max-width: 768px)
+    .filters-card
+        .ant-card-body
+            padding: 16px !important
+
+        .ant-row
+            .ant-col
+                margin-bottom: 8px
+
+@media (max-width: 576px)
+    .filters-card
+        .ant-card-body
+            padding: 12px !important

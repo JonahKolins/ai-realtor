@@ -1,37 +1,86 @@
 .listings-page
-	display: flex
-	justify-content: flex-start
-	flex-grow: 1
-	flex-direction: column
+    display: flex
+    justify-content: flex-start
+    flex-grow: 1
+    flex-direction: column
+    min-height: 100vh
+    padding: 16px
+    background: #fafafa
 
-	.listings-container
-		display: flex
-		flex-direction: column
-		gap: 20px
+    .listings-container
+        max-width: 1000px
+        width: 100%
+        margin: 0 auto
+        display: flex
+        flex-direction: column
+        gap: 16px
 
-		.listings-header
-			display: flex
-			justify-content: space-between
-			align-items: center
-			gap: 20px
+        .listings-header
+            display: flex
+            justify-content: space-between
+            align-items: center
+            gap: 16px
+            background: white
+            padding: 16px
+            border-radius: 8px
+            border: 1px solid #e0e0e0
 
-		.listings-body
-			display: flex
-			flex-direction: column
-			gap: 20px
+            .stats
+                color: #666
+                font-size: 14px
 
-			.listing-item
-				display: flex
-				flex-direction: column
-				gap: 16px
+        .listings-content
+            display: flex
+            flex-direction: column
+            gap: 12px
 
-				.listing-item-header
-					display: flex
-					justify-content: space-between
-					align-items: center
-					gap: 16px
+            .listings-grid
+                display: flex
+                flex-direction: column
+                gap: 8px
 
-				.listing-item-body
-					display: flex
-					flex-direction: column
-					gap: 8px
+            .empty-state
+                background: white
+                padding: 32px 16px
+                border-radius: 8px
+                border: 1px solid #e0e0e0
+                text-align: center
+
+            .pagination-container
+                display: flex
+                justify-content: center
+                padding: 16px
+                background: white
+                border-radius: 8px
+                border: 1px solid #e0e0e0
+
+                .pagination
+                    .ant-pagination-item
+                        border-radius: 6px !important
+
+                    .ant-pagination-item-active
+                        border-color: #000 !important
+                        background: #000 !important
+
+                        a
+                            color: white !important
+
+// Mobile responsive
+@media (max-width: 768px)
+    .listings-page
+        padding: 12px
+
+        .listings-container
+            gap: 12px
+
+            .listings-header
+                padding: 12px
+                flex-direction: column
+                align-items: flex-start
+                gap: 8px
+
+            .listings-content
+                gap: 8px
+
+                .pagination-container
+                    padding: 12px

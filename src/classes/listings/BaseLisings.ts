@@ -1,5 +1,5 @@
 import { Instance } from "../../core/entity";
-import { IListing, requestListings } from "../../api/network/listings";
+import { IListing, requestListings, IListingsRequestParams } from "../../api/network/listings";
 import { EventEmitter } from "../../core/event/EventEmmiter";
 
 export class BaseListings {
@@ -9,6 +9,7 @@ export class BaseListings {
     private _total: number;
     private _loading: boolean;
     private _error: string | null;
+    private _currentParams: IListingsRequestParams;
 
     public readonly listingsChanged: EventEmitter<void>;
     
@@ -19,6 +20,7 @@ export class BaseListings {
         this._total = 0;
         this._loading = false;
         this._error = null;
+        this._currentParams = {};
 
         this.listingsChanged = new EventEmitter('listingsChanged');
     }
@@ -52,12 +54,26 @@ export class BaseListings {
         return this._error;
     }
 
+    public get currentParams(): IListingsRequestParams {
+        return this._currentParams;
+    }
+
     // читаем листинги
-    public readListings(): Promise<void> {
+    public readListings(params?: IListingsRequestParams): Promise<void> {
         return new Promise((resolve, reject) => {
             this._loading = true;
             this._error = null;
-            requestListings()
+            
+            const requestParams = {
+                ...this._currentParams,
+                ...params,
+                page: params?.page || this._page,
+                limit: params?.limit || this._limit,
+            };
+
+            this._currentParams = requestParams;
+
+            requestListings(requestParams)
                 .then((listings) => {
                     this._listings = listings.items;
                     this._page = listings.page;
@@ -74,5 +90,21 @@ export class BaseListings {
                     this.listingsChanged.emit();
                 });
         });
+    }
+
+    // изменить страницу
+    public changePage(page: number): Promise<void> {
+        return this.readListings({ ...this._currentParams, page });
+    }
+
+    // применить фильтры
+    public applyFilters(params: IListingsRequestParams): Promise<void> {
+        return this.readListings({ ...params, page: 1 });
+    }
+
+    // сбросить фильтры
+    public resetFilters(): Promise<void> {
+        this._currentParams = {};
+        return this.readListings({ page: 1 });
     }
 }
