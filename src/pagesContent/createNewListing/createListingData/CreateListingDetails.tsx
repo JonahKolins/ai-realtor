@@ -100,6 +100,7 @@ export const CreateListingDetails = React.memo<CreateListingDetailsProps>(({data
                     </div>
                     {photosEnabled && (
                         <PhotosSection 
+                            data={data}
                             onPhotosChange={handlePhotosChange} 
                             className={styles['create-listing-details__photos-section']} 
                             labelEnabled={false}

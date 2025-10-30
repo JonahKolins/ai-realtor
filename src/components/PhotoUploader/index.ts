@@ -1,3 +1,3 @@
 export { default as PhotoUploader } from './PhotoUploader';
 export { PhotoPreview } from './PhotoPreview';
-export type { PhotoFile } from './PhotoUploader';
+export type { PhotoFile, PhotoUploaderProps } from './types';

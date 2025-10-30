@@ -89,13 +89,13 @@ export const CreateListingInfo = React.memo<CreateListingInfoProps>(({ data, sav
                         <div className={styles['switcher-text']}>Add photos to the listing to help the buyer understand the property better.</div>
                     </div>
                 </div>
-                {photosEnabled && (
+                {/* {photosEnabled && (
                     <PhotosSection 
                         onPhotosChange={() => {}} 
                         className={styles['create-listing-info__photos-section']} 
                         labelEnabled={false}
                     />
-                )}
+                )} */}
             </div>
             <div className={styles['create-listing-info__section']}>
                 {/* <div className={styles['section-title']}>Property details</div> */}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./ListingPreview.module.sass";
 import { IListingDraftData } from "@/classes/listings/ListingDraft";
 import { IListingUserFields } from "@/classes/listings/ListingUserFields";
@@ -18,6 +18,9 @@ import {
 } from "react-icons/io5";
 import { Segmented } from "antd";
 import classNames from "classnames";
+import { listingPhotoStorage, DisplayPhoto } from "@/services/ListingPhotoStorage";
+import { PhotoSlider } from "@/components/PhotoSlider";
+import { PhotoModal } from "@/components/PhotoModal";
 
 interface ListingPreviewProps {
     data: IListingDraftData;
@@ -96,27 +99,76 @@ const detailGroups: DetailGroup[] = [
 
 export const ListingPreview = React.memo<ListingPreviewProps>(({ data }) => {
     const [viewMode, setViewMode] = useState<ViewMode>('desktop');
+    const [photos, setPhotos] = useState<DisplayPhoto[]>([]);
+    const [photoModalOpen, setPhotoModalOpen] = useState(false);
+    const [modalPhotoIndex, setModalPhotoIndex] = useState(0);
 
-    const renderPhotosDesktop = () => {
-        const photos = data.photos || [];
-        
+    // Подписка на изменения фотографий в хранилище
+    useEffect(() => {
+        const updatePhotos = (newPhotos: DisplayPhoto[]) => {
+            // Показываем только готовые фотографии (с завершенной загрузкой)
+            const readyPhotos = newPhotos.filter(photo => 
+                photo.status === 'ready' && photo.isUploaded
+            );
+            setPhotos(readyPhotos);
+        };
+
+        // Получаем текущие фотографии
+        updatePhotos(listingPhotoStorage.getPhotos());
+
+        // Подписываемся на обновления
+        const handle = listingPhotoStorage.photosUpdated.subscribe(updatePhotos);
+
+        return () => {
+            handle.dispose();
+        };
+    }, []);
+
+    const handlePhotoClick = (photo: DisplayPhoto, index: number) => {
+        setModalPhotoIndex(index);
+        setPhotoModalOpen(true);
+    };
+
+    const handlePhotoDownload = (photo: DisplayPhoto) => {
+        // Создаем ссылку для скачивания
+        const link = document.createElement('a');
+        link.href = photo.url;
+        link.download = `photo-${photo.id}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handlePhotoShare = async (photo: DisplayPhoto) => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Foto della proprietà',
+                    text: 'Guarda questa foto della proprietà',
+                    url: photo.url
+                });
+            } catch (error) {
+                console.log('Condivisione annullata');
+            }
+        } else {
+            // Fallback: copia URL negli appunti
+            try {
+                await navigator.clipboard.writeText(photo.url);
+                // Qui si potrebbe aggiungere una notifica toast
+                console.log('URL copiato negli appunti');
+            } catch (error) {
+                console.error('Errore nella copia dell\'URL:', error);
+            }
+        }
+    };
+
+    const renderPhotosDesktop = () => {        
         if (photos.length === 0) {
             return (
                 <div className={styles['photos-gallery']}>
-                    <div className={styles['main-photo']}>
-                        <div className={styles['photo-placeholder']}>
-                            <IoImageOutline className={styles['placeholder-icon']} />
-                            <span className={styles['placeholder-text']}>Foto principale</span>
-                        </div>
-                    </div>
-                    <div className={styles['side-photos']}>
-                        {[1, 2, 3, 4].map(i => (
-                            <div key={i} className={styles['side-photo']}>
-                                <div className={styles['photo-placeholder']}>
-                                    <IoImageOutline size={24} />
-                                </div>
-                            </div>
-                        ))}
+                    <div className={styles['photo-placeholder']}>
+                        <IoImageOutline className={styles['placeholder-icon']} />
+                        <span className={styles['placeholder-text']}>Nessuna foto disponibile</span>
                     </div>
                 </div>
             );
@@ -124,38 +176,23 @@ export const ListingPreview = React.memo<ListingPreviewProps>(({ data }) => {
 
         return (
             <div className={styles['photos-gallery']}>
-                <div className={styles['main-photo']}>
-                    <img src={photos[0]} alt="Foto principale" />
-                </div>
-                <div className={styles['side-photos']}>
-                    {photos.slice(1, 5).map((photo, index) => (
-                        <div key={index} className={styles['side-photo']}>
-                            <img src={photo} alt={`Foto ${index + 2}`} />
-                        </div>
-                    ))}
-                    {Array.from({ length: Math.max(0, 4 - (photos.length - 1)) }, (_, i) => (
-                        <div key={`empty-${i}`} className={styles['side-photo']}>
-                            <div className={styles['photo-placeholder']}>
-                                <IoImageOutline size={24} />
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <PhotoSlider
+                    photos={photos}
+                    showThumbnails={true}
+                    onPhotoClick={handlePhotoClick}
+                    className={styles['desktop-slider']}
+                />
             </div>
         );
     };
 
-    const renderPhotosMobile = () => {
-        const photos = data.photos || [];
-        
+    const renderPhotosMobile = () => {        
         if (photos.length === 0) {
             return (
                 <div className={styles['photos-gallery']}>
-                    <div className={styles['main-photo']}>
-                        <div className={styles['photo-placeholder']}>
-                            <IoImageOutline className={styles['placeholder-icon']} />
-                            <span className={styles['placeholder-text']}>Foto principale</span>
-                        </div>
+                    <div className={styles['photo-placeholder']}>
+                        <IoImageOutline className={styles['placeholder-icon']} />
+                        <span className={styles['placeholder-text']}>Nessuna foto disponibile</span>
                     </div>
                 </div>
             );
@@ -163,18 +200,12 @@ export const ListingPreview = React.memo<ListingPreviewProps>(({ data }) => {
 
         return (
             <div className={styles['photos-gallery']}>
-                <div className={styles['main-photo']}>
-                    <img src={photos[0]} alt="Foto principale" />
-                </div>
-                {photos.length > 1 && (
-                    <div className={styles['photo-thumbnails']}>
-                        {photos.slice(1).map((photo, index) => (
-                            <div key={index} className={styles['thumbnail']}>
-                                <img src={photo} alt={`Thumbnail ${index + 2}`} />
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <PhotoSlider
+                    photos={photos}
+                    showThumbnails={false}
+                    onPhotoClick={handlePhotoClick}
+                    className={styles['mobile-slider']}
+                />
             </div>
         );
     };
@@ -362,6 +393,16 @@ export const ListingPreview = React.memo<ListingPreviewProps>(({ data }) => {
             <div className={classNames(styles['preview-container'], viewMode === 'mobile' && styles._mobile)}>
                 {viewMode === 'desktop' ? renderDesktopView() : renderMobileView()}
             </div>
+
+            {/* Photo Modal */}
+            <PhotoModal
+                photos={photos}
+                initialIndex={modalPhotoIndex}
+                open={photoModalOpen}
+                onClose={() => setPhotoModalOpen(false)}
+                onDownload={handlePhotoDownload}
+                onShare={handlePhotoShare}
+            />
         </div>
     );
 });

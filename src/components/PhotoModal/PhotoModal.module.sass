@@ -1,0 +1,296 @@
+// @import '../../styles/variables.module'
+
+.photo-modal
+    :global(.ant-modal-content)
+        background: transparent !important
+        box-shadow: none !important
+
+    :global(.ant-modal-body)
+        background: rgba(0, 0, 0, 0.9) !important
+
+.modal-content
+    display: flex
+    flex-direction: column
+    height: 100vh
+    width: 100vw
+
+    .header
+        display: flex
+        justify-content: space-between
+        align-items: center
+        padding: 20px 24px
+        background: rgba(0, 0, 0, 0.8)
+        backdrop-filter: blur(10px)
+        z-index: 10
+
+        .photo-info
+            display: flex
+            align-items: center
+            gap: 16px
+
+            .photo-counter
+                color: white
+                font-size: 16px
+                font-weight: 500
+
+            .cover-badge
+                background: #000000
+                color: white
+                padding: 4px 8px
+                border-radius: 12px
+                font-size: 12px
+                font-weight: 500
+
+        .actions
+            display: flex
+            align-items: center
+            gap: 12px
+
+            .action-button, .close-button
+                background: rgba(255, 255, 255, 0.1)
+                border: none
+                color: white
+                width: 44px
+                height: 44px
+                border-radius: 50%
+                display: flex
+                align-items: center
+                justify-content: center
+                cursor: pointer
+                transition: all 0.2s ease
+
+                &:hover
+                    background: rgba(255, 255, 255, 0.2)
+                    transform: scale(1.1)
+
+                svg
+                    width: 20px
+                    height: 20px
+
+            .close-button
+                background: rgba(255, 255, 255, 0.15)
+
+                &:hover
+                    background: rgba(255, 255, 255, 0.25)
+
+    .photo-container
+        flex: 1
+        position: relative
+        display: flex
+        align-items: center
+        justify-content: center
+        padding: 20px
+        min-height: 0
+
+        .image
+            max-width: 100%
+            max-height: 100%
+            object-fit: contain
+            transition: opacity 0.3s ease
+            border-radius: 8px
+
+            &.loading
+                opacity: 0.5
+
+        .loading-overlay
+            position: absolute
+            top: 0
+            left: 0
+            right: 0
+            bottom: 0
+            display: flex
+            align-items: center
+            justify-content: center
+            
+            .spinner
+                width: 60px
+                height: 60px
+                border: 4px solid rgba(255, 255, 255, 0.3)
+                border-top: 4px solid white
+                border-radius: 50%
+                animation: spin 1s linear infinite
+
+        .nav-button
+            position: absolute
+            top: 50%
+            transform: translateY(-50%)
+            background: rgba(255, 255, 255, 0.1)
+            backdrop-filter: blur(10px)
+            color: white
+            border: none
+            border-radius: 50%
+            width: 60px
+            height: 60px
+            display: flex
+            align-items: center
+            justify-content: center
+            cursor: pointer
+            transition: all 0.2s ease
+            z-index: 5
+
+            &:hover
+                background: rgba(255, 255, 255, 0.2)
+                transform: translateY(-50%) scale(1.1)
+
+            &.previous
+                left: 40px
+
+            &.next
+                right: 40px
+
+            svg
+                width: 24px
+                height: 24px
+
+    .thumbnails
+        background: rgba(0, 0, 0, 0.8)
+        backdrop-filter: blur(10px)
+        padding: 20px 24px
+        border-top: 1px solid rgba(255, 255, 255, 0.1)
+
+        .thumbnails-container
+            display: flex
+            gap: 12px
+            justify-content: center
+            max-width: 100%
+            overflow-x: auto
+            padding: 4px
+            scrollbar-width: thin
+            
+            &::-webkit-scrollbar
+                height: 6px
+                
+            &::-webkit-scrollbar-track
+                background: rgba(255, 255, 255, 0.1)
+                border-radius: 3px
+                
+            &::-webkit-scrollbar-thumb
+                background: rgba(255, 255, 255, 0.3)
+                border-radius: 3px
+                
+            &::-webkit-scrollbar-thumb:hover
+                background: rgba(255, 255, 255, 0.5)
+
+            .thumbnail
+                position: relative
+                flex-shrink: 0
+                width: 80px
+                height: 80px
+                border-radius: 8px
+                overflow: hidden
+                cursor: pointer
+                border: 2px solid transparent
+                transition: all 0.2s ease
+
+                &:hover
+                    border-color: rgba(255, 255, 255, 0.5)
+                    transform: scale(1.05)
+
+                &.active
+                    border-color: #000000
+                    transform: scale(1.05)
+
+                img
+                    width: 100%
+                    height: 100%
+                    object-fit: cover
+
+                .thumbnail-badge
+                    position: absolute
+                    top: 4px
+                    right: 4px
+                    background: #000000
+                    color: white
+                    width: 20px
+                    height: 20px
+                    border-radius: 50%
+                    display: flex
+                    align-items: center
+                    justify-content: center
+                    font-size: 10px
+                    font-weight: bold
+
+@keyframes spin
+    0%
+        transform: rotate(0deg)
+    100%
+        transform: rotate(360deg)
+
+// Responsive design
+@media (max-width: 768px)
+    .modal-content
+        .header
+            padding: 16px 20px
+
+            .photo-info
+                .photo-counter
+                    font-size: 14px
+
+            .actions
+                gap: 8px
+
+                .action-button, .close-button
+                    width: 40px
+                    height: 40px
+
+                    svg
+                        width: 18px
+                        height: 18px
+
+        .photo-container
+            padding: 16px
+
+            .nav-button
+                width: 50px
+                height: 50px
+
+                &.previous
+                    left: 20px
+
+                &.next
+                    right: 20px
+
+                svg
+                    width: 20px
+                    height: 20px
+
+        .thumbnails
+            padding: 16px 20px
+
+            .thumbnails-container
+                gap: 8px
+
+                .thumbnail
+                    width: 60px
+                    height: 60px
+
+                    .thumbnail-badge
+                        width: 16px
+                        height: 16px
+                        font-size: 8px
+
+@media (max-width: 480px)
+    .modal-content
+        .header
+            padding: 12px 16px
+
+        .photo-container
+            padding: 12px
+
+            .nav-button
+                width: 44px
+                height: 44px
+
+                &.previous
+                    left: 16px
+
+                &.next
+                    right: 16px
+
+        .thumbnails
+            padding: 12px 16px
+
+            .thumbnails-container
+                .thumbnail
+                    width: 50px
+                    height: 50px

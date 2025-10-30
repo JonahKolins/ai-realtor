@@ -5,7 +5,7 @@ import styles from './EditPhotosPage.module.sass';
 const EditPhotosPage: React.FC = () => {
     return (
         <div className={styles['edit-photos-page']}>
-            <PhotosSection onPhotosChange={() => {}} />
+            {/* <PhotosSection data={{}} onPhotosChange={() => {}} /> */}
         </div>
     );
 };

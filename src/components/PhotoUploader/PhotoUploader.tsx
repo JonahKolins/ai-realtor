@@ -1,140 +1,177 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { PhotoPreview } from './PhotoPreview';
 import styles from './PhotoUploader.module.sass';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import classNames from 'classnames';
-
-export interface PhotoFile {
-    id: string;
-    file: File;
-    preview: string;
-    status: 'uploading' | 'success' | 'error';
-    error?: string;
-}
-
-interface PhotoUploaderProps {
-    onFilesChange?: (files: PhotoFile[]) => void;
-    maxFiles?: number;
-    maxFileSize?: number; // в байтах
-    uploadZoneClassName?: string;
-    hidePreview?: boolean;
-}
-
-const ALLOWED_IMAGE_TYPES = [
-    'image/jpeg',
-    'image/jpg', 
-    'image/png',
-    'image/gif',
-    'image/webp',
-    'image/bmp',
-    'image/svg+xml'
-];
+import { PhotoFile, PhotoUploaderProps } from './types';
+import { 
+    PhotoUploadService, 
+    SUPPORTED_IMAGE_TYPES, 
+    MAX_FILE_SIZE, 
+    MAX_PHOTOS_PER_LISTING,
+    PhotoUploadCallbacks
+} from '../../services/PhotoUploadService';
+import { listingPhotoStorage } from '../../services/ListingPhotoStorage';
 
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({ 
+    listingId,
     onFilesChange,
-    maxFiles = 10,
-    maxFileSize = 5 * 1024 * 1024, // 5MB по умолчанию
+    onListingIdChange,
+    maxFiles = MAX_PHOTOS_PER_LISTING,
+    maxFileSize = MAX_FILE_SIZE,
     uploadZoneClassName,
-    hidePreview
+    hidePreview,
+    allowRetry = true,
+    showProgress = true
 }) => {
     const [photos, setPhotos] = useState<PhotoFile[]>([]);
     const [isDragOver, setIsDragOver] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
+    
+    const uploadServiceRef = useRef<PhotoUploadService | null>(null);
 
-    const validateFile = useCallback((file: File): string | null => {
-        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-            return `Файл "${file.name}" не является изображением. Поддерживаются только фотографии.`;
+    // Инициализация сервиса загрузки
+    useEffect(() => {
+        const callbacks: PhotoUploadCallbacks = {
+            onProgress: (photoId, progress) => {
+                console.log(`[PhotoUploader] onProgress вызван для ${photoId} с прогрессом ${progress}%`);
+                setPhotos(prev => prev.map(p => 
+                    p.id === photoId ? { ...p, progress } : p
+                ));
+            },
+            onStatusChange: (photoId, status) => {
+                console.log(`[PhotoUploader] onStatusChange вызван для ${photoId} со статусом ${status}`);
+                setPhotos(prev => {
+                    console.log(`[PhotoUploader] Текущие фото до обновления:`, prev.map(p => ({ id: p.id, status: p.status })));
+                    const updated = prev.map(p => 
+                        p.id === photoId ? { ...p, status, canRetry: status === 'error' } : p
+                    );
+                    console.log(`[PhotoUploader] Фото после обновления:`, updated.map(p => ({ id: p.id, status: p.status })));
+                    
+                    // Обновляем глобальное хранилище
+                    const photoFile = updated.find(p => p.id === photoId);
+                    if (photoFile) {
+                        listingPhotoStorage.updatePhotoFromUploader(photoFile);
+                    }
+                    
+                    onFilesChange?.(updated);
+                    return updated;
+                });
+            },
+            onError: (photoId, error) => {
+                setPhotos(prev => {
+                    const updated = prev.map(p => 
+                        p.id === photoId ? { ...p, error, canRetry: true } : p
+                    );
+                    
+                    // Обновляем глобальное хранилище
+                    const photoFile = updated.find(p => p.id === photoId);
+                    if (photoFile) {
+                        listingPhotoStorage.updatePhotoFromUploader(photoFile);
+                    }
+                    
+                    onFilesChange?.(updated);
+                    return updated;
+                });
+            },
+            onComplete: (photoId, uploadedPhotoId) => {
+                console.log(`[PhotoUploader] onComplete вызван для ${photoId} с uploadedPhotoId ${uploadedPhotoId}`);
+                setPhotos(prev => {
+                    const updated = prev.map(p => 
+                        p.id === photoId ? { ...p, uploadedPhotoId } : p
+                    );
+                    
+                    // Обновляем глобальное хранилище
+                    const photoFile = updated.find(p => p.id === photoId);
+                    if (photoFile) {
+                        listingPhotoStorage.updatePhotoFromUploader(photoFile);
+                    }
+                    
+                    onFilesChange?.(updated);
+                    return updated;
+                });
+            },
+            onAllComplete: () => {
+                setIsUploading(false);
+            }
+        };
+
+        uploadServiceRef.current = new PhotoUploadService(callbacks);
+
+        return () => {
+            uploadServiceRef.current?.cancelAllUploads();
+            uploadServiceRef.current?.stopPhotoPolling();
+        };
+    }, [onFilesChange]);
+
+    // Устанавливаем listingId в хранилище при изменении
+    useEffect(() => {
+        if (listingId) {
+            listingPhotoStorage.setListingId(listingId);
         }
-        
-        if (file.size > maxFileSize) {
-            return `Файл "${file.name}" слишком большой. Максимальный размер: ${Math.round(maxFileSize / 1024 / 1024)}MB.`;
-        }
+    }, [listingId]);
 
-        return null;
-    }, [maxFileSize]);
-
-    const uploadFile = async (photoFile: PhotoFile): Promise<void> => {
-        // Заглушка для загрузки на сервер
-        return new Promise((resolve, reject) => {
-            // Имитация загрузки с случайным результатом
-            setTimeout(() => {
-                const random = Math.random();
-                if (random > 0.8) {
-                    reject(new Error('Error uploading to server'));
-                } else {
-                    resolve();
-                }
-            }, 2000 + Math.random() * 3000); // 2-5 секунд
-        });
-    };
+    const validateFiles = useCallback((files: File[]): string[] => {
+        if (!uploadServiceRef.current) return [];
+        return uploadServiceRef.current.validateFiles(files, photos.length);
+    }, [photos.length]);
 
     const processFiles = useCallback(async (fileList: FileList) => {
-        const newErrors: string[] = [];
-        const validFiles: File[] = [];
-
-        // Проверка лимита файлов
-        if (photos.length + fileList.length > maxFiles) {
-            newErrors.push(`You can upload up to ${maxFiles} photos.`);
-            setErrors(newErrors);
+        const files = Array.from(fileList);
+        
+        // Валидация файлов
+        const validationErrors = validateFiles(files);
+        if (validationErrors.length > 0) {
+            setErrors(validationErrors);
+            setTimeout(() => setErrors([]), 5000); // Убираем ошибки через 5 секунд
             return;
         }
 
-        // Валидация файлов
-        Array.from(fileList).forEach(file => {
-            const error = validateFile(file);
-            if (error) {
-                newErrors.push(error);
-            } else {
-                validFiles.push(file);
-            }
-        });
-
-        if (newErrors.length > 0) {
-            setErrors(newErrors);
-            setTimeout(() => setErrors([]), 5000); // Убираем ошибки через 5 секунд
-        }
-
-        if (validFiles.length === 0) return;
-
-        // Создаем объекты фотографий
-        const newPhotos: PhotoFile[] = validFiles.map(file => ({
-            id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        // Создаем объекты фотографий для отображения
+        const newPhotos: PhotoFile[] = files.map(file => ({
+            id: `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             file,
             preview: URL.createObjectURL(file),
-            status: 'uploading'
+            status: 'pending',
+            progress: 0,
+            canRetry: false
         }));
 
         const updatedPhotos = [...photos, ...newPhotos];
         setPhotos(updatedPhotos);
         onFilesChange?.(updatedPhotos);
 
-        // Запускаем загрузку для каждого файла
-        newPhotos.forEach(async (photoFile) => {
-            try {
-                await uploadFile(photoFile);
-                
-                setPhotos(prev => {
-                    const updated = prev.map(p => 
-                        p.id === photoFile.id 
-                            ? { ...p, status: 'success' as const }
-                            : p
-                    );
-                    onFilesChange?.(updated);
-                    return updated;
-                });
-            } catch (error) {
-                setPhotos(prev => {
-                    const updated = prev.map(p => 
-                        p.id === photoFile.id 
-                            ? { ...p, status: 'error' as const, error: (error as Error).message }
-                            : p
-                    );
-                    onFilesChange?.(updated);
-                    return updated;
-                });
-            }
+        // Добавляем новые фотографии в глобальное хранилище
+        newPhotos.forEach(photo => {
+            listingPhotoStorage.updatePhotoFromUploader(photo);
         });
-    }, [photos, maxFiles, validateFile, onFilesChange]);
+
+        // Запускаем загрузку
+        setIsUploading(true);
+        try {
+            if (!uploadServiceRef.current) {
+                throw new Error('Сервис загрузки не инициализирован');
+            }
+            console.log('uploadPhotos -> listingId', listingId);
+            
+            // Передаем ID фотографий в сервис
+            const photoIds = newPhotos.map(p => p.id);
+            const actualListingId = await uploadServiceRef.current.uploadPhotos(files, listingId, photoIds);
+            
+            // Если listingId не был передан, уведомляем о создании черновика
+            if (!listingId && actualListingId) {
+                listingPhotoStorage.setListingId(actualListingId);
+                onListingIdChange?.(actualListingId);
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            setErrors([errorMessage]);
+            setTimeout(() => setErrors([]), 5000);
+            setIsUploading(false);
+        }
+    }, [photos, validateFiles, listingId, onFilesChange, onListingIdChange]);
 
     const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -165,7 +202,21 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
         setIsDragOver(false);
     }, []);
 
-    const handleRemovePhoto = useCallback((photoId: string) => {
+    const handleRemovePhoto = useCallback(async (photoId: string) => {
+        const photo = photos.find(p => p.id === photoId);
+        if (!photo) return;
+
+        // Если фотография была успешно загружена, удаляем с сервера
+        if (photo.uploadedPhotoId && listingId && uploadServiceRef.current) {
+            try {
+                await uploadServiceRef.current.deletePhoto(listingId, photo.uploadedPhotoId);
+            } catch (error) {
+                console.error('Ошибка при удалении фотографии с сервера:', error);
+                // Продолжаем удаление из UI даже если серверное удаление не удалось
+            }
+        }
+
+        // Удаляем из UI и глобального хранилища
         setPhotos(prev => {
             const photoToRemove = prev.find(p => p.id === photoId);
             if (photoToRemove) {
@@ -174,9 +225,61 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
             
             const updated = prev.filter(p => p.id !== photoId);
             onFilesChange?.(updated);
+            
+            // Удаляем из глобального хранилища
+            listingPhotoStorage.removePhoto(photoId);
+            
             return updated;
         });
-    }, [onFilesChange]);
+    }, [photos, listingId, onFilesChange]);
+
+    const handleRetryPhoto = useCallback(async (photoId: string) => {
+        const photo = photos.find(p => p.id === photoId);
+        if (!photo || !uploadServiceRef.current) return;
+
+        // Сбрасываем состояние фотографии
+        setPhotos(prev => prev.map(p => 
+            p.id === photoId 
+                ? { ...p, status: 'pending', progress: 0, error: undefined, canRetry: false }
+                : p
+        ));
+
+        try {
+            setIsUploading(true);
+            
+            // Если у фотографии есть uploadedPhotoId, это означает ошибку обработки
+            // В этом случае нужно попробовать повторно обработать, а не загружать заново
+            if (photo.uploadedPhotoId) {
+                // Для повтора обработки просто перезапускаем polling
+                // Сервер может автоматически повторить обработку при запросе
+                console.log('Повтор обработки фотографии:', photo.uploadedPhotoId);
+                
+                // Устанавливаем статус processing и запускаем polling
+                setPhotos(prev => prev.map(p => 
+                    p.id === photoId 
+                        ? { ...p, status: 'processing', progress: 50 }
+                        : p
+                ));
+                
+                if (uploadServiceRef.current && listingId) {
+                    // Перезапускаем polling для отслеживания повторной обработки
+                    uploadServiceRef.current.restartPollingForProcessing(listingId);
+                }
+            } else {
+                // Обычная повторная загрузка файла
+                await uploadServiceRef.current.uploadPhotos([photo.file], listingId, [photoId]);
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            setErrors([errorMessage]);
+            setTimeout(() => setErrors([]), 5000);
+            setIsUploading(false);
+        }
+    }, [photos, listingId]);
+
+    console.log('photos', photos);
+    console.log('photos[0].status', photos[0]?.status);
+    
 
     return (
         <div className={styles.container}>
@@ -226,8 +329,11 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
                         <PhotoPreview
                             key={photo.id}
                             photo={photo}
+                            status={photo.status}
                             onRemove={handleRemovePhoto}
+                            onRetry={allowRetry ? handleRetryPhoto : undefined}
                             hidePreview={hidePreview}
+                            showProgress={showProgress}
                         />
                     ))}
                 </div>
@@ -235,8 +341,14 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
             {/* Информация */}
             <div className={styles.info}>
-                <div>Uploaded: {photos.length} / {maxFiles}</div>
-                <div>Max file size: {Math.round(maxFileSize / 1024 / 1024)}MB</div>
+                <div>
+                    Фотографий: {photos.length} / {maxFiles}
+                    {isUploading && (
+                        <span className={styles.uploadingIndicator}> • Загрузка...</span>
+                    )}
+                </div>
+                <div>Макс. размер: {Math.round(maxFileSize / 1024 / 1024)}MB</div>
+                <div>Форматы: JPEG, PNG, WebP, HEIC</div>
             </div>
         </div>
     );

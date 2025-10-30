@@ -3,14 +3,16 @@ import { Switch } from 'antd';
 import { PhotoFile, PhotoUploader } from '@/components/PhotoUploader';
 import styles from './PhotosSection.module.sass';
 import classNames from 'classnames';
+import { IListingDraftData } from '@/classes/listings/ListingDraft';
 
 interface PhotosSectionProps {
+    data?: IListingDraftData;
     onPhotosChange: (photos: PhotoFile[]) => void;
     className?: string;
     labelEnabled?: boolean;
 }
 
-const PhotosSection = React.memo<PhotosSectionProps>(({ onPhotosChange, className, labelEnabled }) => {
+const PhotosSection = React.memo<PhotosSectionProps>(({ data, onPhotosChange, className, labelEnabled }) => {
     const [descriptionEnabled, setDescriptionEnabled] = useState<boolean>(false);
     const [aiAnalysisEnabled, setAiAnalysisEnabled] = useState<boolean>(false);
     const [photos, setPhotos] = useState<PhotoFile[]>([]);
@@ -30,7 +32,9 @@ const PhotosSection = React.memo<PhotosSectionProps>(({ onPhotosChange, classNam
     const handleAiAnalysisEnabledChange = (checked: boolean) => {
         setAiAnalysisEnabled(checked);
     };
-
+    
+    console.log('data?.id', data?.id);
+    
     return (
         <div className={classNames(styles['photos-section'], className)}>
             {labelEnabled && (
@@ -40,6 +44,7 @@ const PhotosSection = React.memo<PhotosSectionProps>(({ onPhotosChange, classNam
             )}
             <div className={styles['photos-container']}>
                 <PhotoUploader 
+                    listingId={data?.id}
                     onFilesChange={handlePhotosChange} 
                     maxFiles={10} 
                     maxFileSize={5 * 1024 * 1024} 

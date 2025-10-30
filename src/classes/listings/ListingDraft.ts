@@ -3,6 +3,7 @@ import { EventHandle } from "../../core/event/EventHandle";
 import { ListingType, ListingStatus, IListing, requestUpdateListing, requestCreateListingDraft, ICreateListingDraftResponse } from "../../api/network/listings";
 import { PropertyType } from "@/classes/listings/Listing.types";
 import { IListingUserFields } from "@/classes/listings/ListingUserFields";
+import { ListingPhotoStorage, DisplayPhoto } from "../../services/ListingPhotoStorage";
 
 export interface IListingDraftData {
     // ID для AI генерации
@@ -48,6 +49,7 @@ export class ListingDraft {
     private _data: IListingDraftData = {};
     private _saving: boolean = false;
     private _saveError: string | null = null;
+    private _photoStorage: ListingPhotoStorage;
     private _autoSaveEnabled: boolean = true;
     private _autoSaveTimeout: NodeJS.Timeout | null = null;
 
@@ -59,12 +61,18 @@ export class ListingDraft {
 
     constructor(initialData: Partial<IListingDraftData> = {}) {
         this._data = { ...initialData };
+        this._photoStorage = new ListingPhotoStorage();
         
         // Инициализация событий
         this.dataChanged = new EventEmitter('dataChanged');
         this.saved = new EventEmitter('saved');
         this.published = new EventEmitter('published');
         this.errorOccurred = new EventEmitter('errorOccurred');
+        
+        // Инициализация хранилища фотографий
+        if (this._data.id) {
+            this._photoStorage.setListingId(this._data.id);
+        }
     }
 
     /*
@@ -146,6 +154,28 @@ export class ListingDraft {
     }
 
     /*
+    *  Методы для работы с фотографиями
+    */
+
+    public getPhotoStorage(): ListingPhotoStorage {
+        return this._photoStorage;
+    }
+
+    public getPhotos(): DisplayPhoto[] {
+        return this._photoStorage.getPhotos();
+    }
+
+    public getCoverPhoto(): DisplayPhoto | null {
+        return this._photoStorage.getCoverPhoto();
+    }
+
+    public async loadPhotos(): Promise<void> {
+        if (this._id) {
+            await this._photoStorage.loadPhotosFromServer(this._id);
+        }
+    }
+
+    /*
     *  Управление автосохранением
     */
 
@@ -180,9 +210,13 @@ export class ListingDraft {
             
             if (!this._id) {
                 this._id = response.id;
+                this._photoStorage.setListingId(this._id);
             }
+
+            this._data.id = response.id;
             
             this.saved.emit(response);
+            this.dataChanged.emit(this.data);
             return response;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -256,6 +290,7 @@ export class ListingDraft {
             
             const draft = new ListingDraft(draftData.data);
             draft._id = draftData.id;
+            draft._photoStorage.setListingId(draftData.id);
             
             return draft;
         } catch (error) {

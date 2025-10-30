@@ -35,11 +35,12 @@ export const CreateListingPhotos = React.memo<CreateListingPhotosProps>(({onPhot
                         <div className={styles['switcher-text']}>Add photos to the listing to help the buyer understand the property better.</div>
                     </div>
                 </div>
-                <PhotosSection 
+                {/* <PhotosSection 
+                    data={data}
                     onPhotosChange={handlePhotosChange} 
                     className={styles['create-listing-photos__photos-section']} 
                     labelEnabled={false}
-                />
+                /> */}
             </div>
         </div>
     )
