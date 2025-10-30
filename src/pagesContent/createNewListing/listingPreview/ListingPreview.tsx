@@ -18,7 +18,7 @@ import {
 } from "react-icons/io5";
 import { Segmented } from "antd";
 import classNames from "classnames";
-import { listingPhotoStorage, DisplayPhoto } from "@/services/ListingPhotoStorage";
+import { listingPhotoStorage, DisplayPhoto } from "@/classes/photos/ListingPhotoStorage";
 import { PhotoSlider } from "@/components/PhotoSlider";
 import { PhotoModal } from "@/components/PhotoModal";
 

@@ -3,7 +3,7 @@ import { EventHandle } from "../../core/event/EventHandle";
 import { ListingType, ListingStatus, IListing, requestUpdateListing, requestCreateListingDraft, ICreateListingDraftResponse } from "../../api/network/listings";
 import { PropertyType } from "@/classes/listings/Listing.types";
 import { IListingUserFields } from "@/classes/listings/ListingUserFields";
-import { ListingPhotoStorage, DisplayPhoto } from "../../services/ListingPhotoStorage";
+import { ListingPhotoStorage, DisplayPhoto } from "../photos/ListingPhotoStorage";
 
 export interface IListingDraftData {
     // ID для AI генерации
@@ -104,8 +104,7 @@ export class ListingDraft {
             this._data.propertyType &&
             this._data.title &&
             this._data.description &&
-            this._data.price &&
-            this._data.photos?.length
+            this._data.price
         );
     }
 

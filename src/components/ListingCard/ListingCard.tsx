@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dropdown, Button } from 'antd';
-import { MoreOutlined, EditOutlined, DeleteOutlined, PictureOutlined } from '@ant-design/icons';
+import { MoreOutlined, EditOutlined, DeleteOutlined, PictureOutlined, EyeOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { IListing, ListingStatus, ListingType } from '../../api/network/listings';
 import { datetimeUtils } from '../../core/utils/datetimeUtils';
@@ -10,9 +10,10 @@ interface ListingCardProps {
     listing: IListing;
     onEdit?: (listingId: string) => void;
     onDelete?: (listingId: string) => void;
+    onView?: (listingId: string) => void;
 }
 
-const ListingCard: React.FC<ListingCardProps> = ({ listing, onEdit, onDelete }) => {
+const ListingCard: React.FC<ListingCardProps> = ({ listing, onEdit, onDelete, onView }) => {
     const getStatusText = (status: ListingStatus) => {
         switch (status) {
             case 'draft':
@@ -47,6 +48,12 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onEdit, onDelete }) 
 
     const items: MenuProps['items'] = [
         {
+            key: 'view',
+            label: 'View',
+            icon: <EyeOutlined />,
+            onClick: () => onView?.(listing.id),
+        },
+        {
             key: 'edit',
             label: 'Edit',
             icon: <EditOutlined />,
@@ -60,6 +67,15 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onEdit, onDelete }) 
             onClick: () => onDelete?.(listing.id),
         },
     ];
+
+    const handleCardClick = (e: React.MouseEvent) => {
+        // Не обрабатываем клик, если кликнули на кнопку действий
+        if (e.currentTarget !== e.target && 
+            (e.target as Element).closest('button, .ant-dropdown')) {
+            return;
+        }
+        onView?.(listing.id);
+    };
 
     const generateSummary = () => {
         const { userFields } = listing;
@@ -75,12 +91,16 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onEdit, onDelete }) 
     };
 
     return (
-        <div className={styles['listing-card']}>
+        <div 
+            className={`${styles['listing-card']} ${onView ? styles['clickable'] : ''}`}
+            onClick={handleCardClick}
+        >
             <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
                 <Button
                     type="text"
                     icon={<MoreOutlined />}
                     className={styles['actions-button']}
+                    onClick={(e) => e.stopPropagation()}
                 />
             </Dropdown>
 

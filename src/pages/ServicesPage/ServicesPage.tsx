@@ -10,6 +10,7 @@ import classNames from 'classnames';
 const CreateNewListingPage = React.lazy(() => import('../CreatePage/CreateNewListingPage'));
 const ListingsPage = React.lazy(() => import('../ListingsPage/ListingsPage'));
 const EditPhotosPage = React.lazy(() => import('../EditPhotosPage/EditPhotosPage'));
+const ListingDetailPage = React.lazy(() => import('../ListingDetailPage/ListingDetailPage'));
 
 interface INavigationItem {
     title: string;
@@ -91,6 +92,7 @@ const ServicesPage: React.FC = () => {
                                 {/* Подстраницы */}
                                 <Route path="/create" element={<CreateNewListingPage />} />
                                 <Route path="/listings" element={<ListingsPage />} />
+                                <Route path="/listings/:id" element={<ListingDetailPage />} />
                                 <Route path="/edit-photos" element={<EditPhotosPage />} />
                                 
                                 {/* Fallback для неизвестных роутов */}

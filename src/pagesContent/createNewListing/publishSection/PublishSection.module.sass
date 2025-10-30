@@ -1,0 +1,234 @@
+.container
+    max-width: 800px
+    margin: 0 auto
+    padding: 0 20px
+
+.header
+    text-align: center
+    margin-bottom: 32px
+
+    h2
+        font-size: 28px
+        font-weight: 600
+        margin-bottom: 12px
+        color: #1a1a1a
+
+    .description
+        font-size: 16px
+        color: #666
+        line-height: 1.5
+        margin: 0
+
+.summary
+    background: #f8f9fa
+    border-radius: 12px
+    padding: 24px
+    margin-bottom: 24px
+
+    h3
+        font-size: 18px
+        font-weight: 600
+        margin-bottom: 20px
+        color: #1a1a1a
+
+    .summary-grid
+        display: grid
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
+        gap: 16px
+        margin-bottom: 20px
+
+        .summary-item
+            display: flex
+            flex-direction: column
+            gap: 4px
+
+            .label
+                font-size: 12px
+                font-weight: 500
+                color: #666
+                text-transform: uppercase
+                letter-spacing: 0.5px
+
+            .value
+                font-size: 16px
+                font-weight: 500
+                color: #1a1a1a
+
+    .summary-description
+        border-top: 1px solid #e9ecef
+        padding-top: 16px
+
+        .label
+            font-size: 12px
+            font-weight: 500
+            color: #666
+            text-transform: uppercase
+            letter-spacing: 0.5px
+            display: block
+            margin-bottom: 8px
+
+        .description-text
+            font-size: 14px
+            line-height: 1.5
+            color: #495057
+            margin: 0
+
+.warnings
+    background: #fff3cd
+    border: 1px solid #ffeaa7
+    border-radius: 8px
+    padding: 16px
+    margin-bottom: 24px
+
+    h4
+        font-size: 14px
+        font-weight: 600
+        color: #856404
+        margin-bottom: 8px
+
+    ul
+        margin: 0
+        padding-left: 16px
+
+        li
+            font-size: 14px
+            color: #856404
+            margin-bottom: 4px
+
+.actions
+    text-align: center
+    margin: 32px 0
+
+    .publish-button
+        background: #000000
+        color: white
+        border: none
+        border-radius: 8px
+        padding: 16px 32px
+        font-size: 16px
+        font-weight: 600
+        cursor: pointer
+        display: inline-flex
+        align-items: center
+        gap: 8px
+        transition: all 0.2s ease
+        min-width: 200px
+        justify-content: center
+
+        &:hover:not(.disabled)
+            background: #333333
+            transform: translateY(-1px)
+
+        &.disabled
+            background: #ccc
+            cursor: not-allowed
+            transform: none
+
+        .spinner
+            width: 16px
+            height: 16px
+            border: 2px solid transparent
+            border-top: 2px solid currentColor
+            border-radius: 50%
+            animation: spin 1s linear infinite
+
+// Success state
+.success-section
+    text-align: center
+    padding: 48px 24px
+
+    .success-icon
+        color: #28a745
+        margin-bottom: 24px
+
+    .success-title
+        font-size: 24px
+        font-weight: 600
+        color: #1a1a1a
+        margin-bottom: 12px
+
+    .success-description
+        font-size: 16px
+        color: #666
+        margin-bottom: 32px
+        line-height: 1.5
+
+    .success-actions
+        display: flex
+        gap: 16px
+        justify-content: center
+        flex-wrap: wrap
+
+        .primary-button, .secondary-button
+            padding: 12px 24px
+            border-radius: 8px
+            font-size: 14px
+            font-weight: 600
+            cursor: pointer
+            transition: all 0.2s ease
+            display: inline-flex
+            align-items: center
+            gap: 8px
+            border: none
+            text-decoration: none
+
+        .primary-button
+            background: #000000
+            color: white
+
+            &:hover:not(:disabled)
+                background: #333333
+                transform: translateY(-1px)
+
+            &:disabled
+                background: #ccc
+                cursor: not-allowed
+
+        .secondary-button
+            background: transparent
+            color: #666
+            border: 2px solid #e9ecef
+
+            &:hover:not(:disabled)
+                border-color: #000000
+                color: #000000
+
+            &:disabled
+                color: #ccc
+                border-color: #f1f3f4
+                cursor: not-allowed
+
+@keyframes spin
+    0%
+        transform: rotate(0deg)
+    100%
+        transform: rotate(360deg)
+
+// Responsive design
+@media (max-width: 768px)
+    .container
+        padding: 0 16px
+
+    .header
+        margin-bottom: 24px
+
+        h2
+            font-size: 24px
+
+    .summary
+        padding: 20px
+
+        .summary-grid
+            grid-template-columns: 1fr
+            gap: 12px
+
+    .success-section
+        padding: 32px 16px
+
+        .success-actions
+            flex-direction: column
+            align-items: center
+
+            .primary-button, .secondary-button
+                width: 100%
+                max-width: 280px

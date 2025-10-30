@@ -1,7 +1,7 @@
-import { EventEmitter } from '../core/event/EventEmmiter';
-import { PhotoFile } from '../components/PhotoUploader/types';
-import { IListingPhoto } from '../api/network/listings/requests/GetListingPhotos';
-import { requestListingPhotos } from '../api/network/listings';
+import { EventEmitter } from '../../core/event/EventEmmiter';
+import { PhotoFile } from '../../components/PhotoUploader/types';
+import { IListingPhoto } from '../../api/network/listings/requests/GetListingPhotos';
+import { requestListingPhotos } from '../../api/network/listings';
 
 // Интерфейс для отображаемой фотографии (объединение загружаемой и загруженной)
 export interface DisplayPhoto {

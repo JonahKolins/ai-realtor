@@ -9,7 +9,7 @@ import {
     IoCloudUploadOutline
 } from 'react-icons/io5';
 import { PhotoFile } from './types';
-import { PhotoUploadStatus } from '@/services/PhotoUploadService';
+import { PhotoUploadStatus } from '@/classes/photos/PhotoUploadService';
 
 export interface PhotoPreviewProps {
     photo: PhotoFile;

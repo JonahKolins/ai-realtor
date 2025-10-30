@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useListingDraft } from '@/core/hooks/useListingDraft';
 import { IUpdateListingInfo } from '@/classes/listings/ListingDraft';
 import { ListingPreview } from '@/pagesContent/createNewListing/listingPreview/ListingPreview';
 import { CreateListingPropertyDetails } from '@/pagesContent/createNewListing/createListingPropertyDetails/CreateListingPropertyDetails';
 import { CreateListingDetails } from '@/pagesContent/createNewListing/createListingData/CreateListingDetails';
 import { GenerateListingSection } from '@/pagesContent/createNewListing/generateListingSection/GenerateListingSection';
+import { PublishSection } from '@/pagesContent/createNewListing/publishSection/PublishSection';
 import { IoCheckmarkCircleOutline, IoChevronForward } from 'react-icons/io5';
 import styles from './CreateNewListingPage.module.sass';
 import classNames from 'classnames';
@@ -27,9 +29,10 @@ interface StepInfo {
 
 
 const CreateNewListingPage: React.FC = () => {
+    const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState<NavigationItemAlias>(NavigationItemAlias.LISTING);
 
-    const {draft, data, saving, updateListingType, updatePropertyType, updateUserFields, updateBasicInfo, updatePrice, saveDraft, forceClearDraft} = useListingDraft({
+    const {draft, data, saving, updateListingType, updatePropertyType, updateUserFields, updateBasicInfo, updatePrice, saveDraft, publishDraft, forceClearDraft} = useListingDraft({
         autoSave: true,
         createOnMount: true,
         initialData: {}
@@ -62,6 +65,29 @@ const CreateNewListingPage: React.FC = () => {
         console.log('Basic info changed:', info);
         updateBasicInfo(info);
     }
+
+    // обработчик публикации объявления
+    const handlePublish = async (): Promise<{ success: boolean; listingId?: string; status?: string }> => {
+        try {
+            const publishedListing = await publishDraft();
+            return {
+                success: true,
+                listingId: publishedListing.id,
+                status: publishedListing.status
+            };
+        } catch (error) {
+            console.error('Ошибка при публикации:', error);
+            return {
+                success: false
+            };
+        }
+    };
+
+    // обработчик перехода к объявлению
+    const handleGoToListing = (listingId: string) => {
+        navigate(`/services/listings/${listingId}`);
+    };
+    
 
     // проверка готовности шага "Listing details"
     const isListingDetailsCompleted = (): boolean => {
@@ -207,21 +233,12 @@ const CreateNewListingPage: React.FC = () => {
                 )
             case NavigationItemAlias.PUBLISH:
                 return (
-                    <div className={styles['publish-step']}>
-                        <h2>Publish listing</h2>
-                        <p>Your listing is ready to be published. Check all the data and publish it.</p>
-                        <div className={styles['step-actions']}>
-                            <button 
-                                className={styles['publish-button']}
-                                onClick={() => {
-                                    // Логика публикации
-                                    console.log('Publishing listing...', data);
-                                }}
-                            >
-                                Publish
-                            </button>
-                        </div>
-                    </div>
+                    <PublishSection
+                        data={data}
+                        isLoading={saving}
+                        onPublish={handlePublish}
+                        onGoToListing={handleGoToListing}
+                    />
                 )
             default: return null;
         }

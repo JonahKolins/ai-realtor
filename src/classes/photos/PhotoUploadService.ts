@@ -11,7 +11,7 @@ import {
     IListingPhoto,
     requestCreateListingDraft,
     ListingType
-} from '../api/network/listings';
+} from '../../api/network/listings';
 
 // Поддерживаемые MIME типы
 export const SUPPORTED_IMAGE_TYPES = [

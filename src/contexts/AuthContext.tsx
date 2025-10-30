@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AuthState, LoginCredentials, RegisterCredentials, User } from '../types/auth';
-import authService from '../services/AuthService';
+import authService from '../classes/auth/AuthService';
 
 interface AuthContextType extends AuthState {
   // Методы аутентификации

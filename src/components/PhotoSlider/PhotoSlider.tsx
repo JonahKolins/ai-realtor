@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import styles from './PhotoSlider.module.sass';
 import { IoChevronBack, IoChevronForward, IoExpand } from 'react-icons/io5';
-import { DisplayPhoto } from '../../services/ListingPhotoStorage';
+import { DisplayPhoto } from '../../classes/photos/ListingPhotoStorage';
 import classNames from 'classnames';
 
 export interface PhotoSliderProps {

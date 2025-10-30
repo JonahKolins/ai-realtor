@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ListingDraft, IListingDraftData, IUpdateListingInfo } from '../../classes/listings/ListingDraft';
 import { ListingDraftManager } from '../../classes/listings/ListingDraftManager';
-import { ListingType } from '../../api/network/listings';
+import { ListingType, IListing } from '../../api/network/listings';
 import { PropertyType } from '@/classes/listings/Listing.types';
 
 export interface UseListingDraftOptions {
@@ -29,7 +29,7 @@ export interface UseListingDraftReturn {
     // Управление черновиком
     createNewDraft: (initialData?: Partial<IListingDraftData>) => ListingDraft;
     saveDraft: () => Promise<void>;
-    publishDraft: () => Promise<void>;
+    publishDraft: () => Promise<IListing>;
     deleteDraft: () => Promise<void>;
     clearDraft: () => void; // Метод для очистки локального черновика
     forceClearDraft: () => void; // Принудительная очистка через ref
@@ -174,17 +174,21 @@ export function useListingDraft(options: UseListingDraftOptions = {}): UseListin
         }
     }, [draft]);
 
-    const publishDraft = useCallback(async () => {
-        if (!draft) return;
+    const publishDraft = useCallback(async (): Promise<IListing> => {
+        if (!draft) {
+            throw new Error('No draft available for publishing');
+        }
         
         try {
             setSaving(true);
             setSaveError(null);
-            await draft.publish();
+            const publishedListing = await draft.publish();
             // После публикации черновик автоматически удаляется из менеджера
+            return publishedListing;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             setSaveError(errorMessage);
+            throw error; // Пробрасываем ошибку дальше
         } finally {
             setSaving(false);
         }

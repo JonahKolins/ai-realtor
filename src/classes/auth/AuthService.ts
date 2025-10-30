@@ -6,15 +6,15 @@ import {
   User,
   AuthErrorCode,
   AUTH_ERROR_MESSAGES 
-} from '../types/auth';
+} from '../../types/auth';
 import { 
   loginUser, 
   registerUser, 
   getCurrentUser, 
   logoutUser, 
   logoutAllDevices 
-} from '../api/auth/methods';
-import { AuthError } from '../api/auth/handlers/AuthResponseHandler';
+} from '../../api/auth/methods';
+import { AuthError } from '../../api/auth/handlers/AuthResponseHandler';
 
 type AuthEventType = 'authStateChanged' | 'error' | 'rateLimited';
 

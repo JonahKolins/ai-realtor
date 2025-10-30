@@ -10,8 +10,8 @@ import {
     MAX_FILE_SIZE, 
     MAX_PHOTOS_PER_LISTING,
     PhotoUploadCallbacks
-} from '../../services/PhotoUploadService';
-import { listingPhotoStorage } from '../../services/ListingPhotoStorage';
+} from '../../classes/photos/PhotoUploadService';
+import { listingPhotoStorage } from '../../classes/photos/ListingPhotoStorage';
 
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({ 
     listingId,

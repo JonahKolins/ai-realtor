@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Modal } from 'antd';
 import styles from './PhotoModal.module.sass';
 import { IoClose, IoChevronBack, IoChevronForward, IoDownload, IoShareSocial } from 'react-icons/io5';
-import { DisplayPhoto } from '../../services/ListingPhotoStorage';
+import { DisplayPhoto } from '../../classes/photos/ListingPhotoStorage';
 import classNames from 'classnames';
 
 export interface PhotoModalProps {

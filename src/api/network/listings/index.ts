@@ -1,4 +1,5 @@
 export { requestListings } from './methods/requestListings';
+export { requestListing } from './methods/requestListing';
 export { requestUpdateListing } from './methods/requestUpdateListing';
 export { requestCreateListingDraft } from './methods/requestCreateListingDraft';
 export { requestGenerateAIDescription } from './methods/requestGenerateAIDescription';
@@ -47,6 +48,7 @@ export type {
     IGetListingPhotosResponse
 } from './requests/GetListingPhotos';
 export { GetListingsRequest } from './requests/GetListingsRequest';
+export { GetListingRequest } from './requests/GetListingRequest';
 export { PatchUpdateListing } from './requests/PatchUpdateListing';
 export { PostCreateListingDraft } from './requests/PostCreateListingDraft';
 export { PostGenerateAIDescription } from './requests/PostGenerateAIDescription';

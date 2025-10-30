@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Pagination, Empty, Spin, Alert, Typography } from 'antd';
 import styles from './ListingsPage.module.sass';
 import { BaseListings } from '../../classes/listings/BaseLisings';
@@ -10,6 +11,7 @@ import { ListingsFilters } from '../../components/ListingsFilters';
 const { Title } = Typography;
 
 const ListingsPage = React.memo(() => {
+    const navigate = useNavigate();
     const [listings, setListings] = useState<IListing[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -71,6 +73,10 @@ const ListingsPage = React.memo(() => {
         }
     };
 
+    const handleView = (listingId: string) => {
+        navigate(`/services/listings/${listingId}`);
+    };
+
     const handleEdit = (listingId: string) => {
         // TODO: Implement edit functionality
         console.log('Edit listing:', listingId);
@@ -122,6 +128,7 @@ const ListingsPage = React.memo(() => {
                                     <ListingCard
                                         key={listing.id}
                                         listing={listing}
+                                        onView={handleView}
                                         onEdit={handleEdit}
                                         onDelete={handleDelete}
                                     />

@@ -1,4 +1,4 @@
-import { PhotoUploadStatus } from '../../services/PhotoUploadService';
+import { PhotoUploadStatus } from '../../classes/photos/PhotoUploadService';
 
 export interface PhotoFile {
     id: string;

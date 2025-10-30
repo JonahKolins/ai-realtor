@@ -1,5 +1,5 @@
 import IResponseHandler from './IResponseHandler';
-import authService from '../../../services/AuthService';
+import authService from '../../../classes/auth/AuthService';
 
 /**
  * Обработчик ответов с автоматической обработкой ошибок аутентификации
